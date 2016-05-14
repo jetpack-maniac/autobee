@@ -43,9 +43,25 @@ Delay = 2
 
 Amount of seconds the program waits before checking the apiaries again.
 
-## 5. Links
+## 5. Considerations
+
+The system is not completely intelligent and cannot completely manage itself.  Keep in mind these aspects and your system will continue to work.
+
+- Does not 'smart' breed bees.
+
+This program will only restart apiaries with first available drone it finds.  If you place a non-pure bred lineage into this it will overflow your output chest in short order.
+
+- OpenComputers basic computer can only run 4 apiaries at a time.
+
+With all tier 1 parts and a screen, GPU, keyboard, and HDD, you can only hook up 4 apiaries before your computer will crash.  Tier 2 and 3 can handle more.
+
+- Physical Layout
+
+The layout must be properly built by the individual before the system can run.  For CC users, you cannot place apiaries next to each other if you are using vanilla chests.  For OC users, you can maximize the amount of apiaries per adapter (up to 5) if you surround the adapter with them (See above for tier 1 limits).
+
+## 6. Links
 
 - OpenComputers Forum Page:
 - ComputerCraft Forum Page:
 - Pastebin: http://pastebin.com/32eLm50M
-- Github:
+- Github: https://github.com/jetpack-maniac/autobee
