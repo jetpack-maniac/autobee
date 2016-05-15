@@ -124,6 +124,7 @@ end
 
 -- End Apiary class
 --------------------------------------------------------------------------------
+-- Misc Functions
 
 function size(input)
   local count = 0
@@ -131,6 +132,14 @@ function size(input)
     count = count + 1
   end
   return count
+end
+
+function deviceConnect(event, address)
+  addDevice(address)
+end
+
+function deviceDisconnect(event, address)
+  removeDevice(address)
 end
 
 function removeDevice(device)
@@ -172,8 +181,8 @@ elseif version == "OpenComputers" then
   for address, device in pairs(devices) do
     addDevice(address)
   end
-  event.listen("component_added",function(event, address) addDevice(address) end)
-  event.listen("component_removed",function(event, address) removeDevice(address) end)
+  event.listen("component_added",deviceConnect)
+  event.listen("component_removed",deviceDisconnect)
 end
 
 ----------------------
@@ -189,9 +198,8 @@ while true do
 
   if version == "OpenComputers" then
     if keyboard.isKeyDown(keyboard.keys.w) and keyboard.isControlDown() then
-      event.ignore("component_available",addDevice)
-      event.ignore("component_removed",removeDevice)
-      os.sleep(0.4)
+      event.ignore("component_available",deviceConnect)
+      event.ignore("component_removed",deviceDisconnect)
       break
     end
   end
