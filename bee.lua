@@ -177,6 +177,9 @@ if version == "ComputerCraft" then
     addDevice(device)
   end
 elseif version == "OpenComputers" then
+  --Aux ignore in case the program crashed and listeners are still active
+  event.ignore("component_available",deviceConnect)
+  event.ignore("component_removed",deviceDisconnect)
   local devices = component.list()
   for address, device in pairs(devices) do
     addDevice(address)
