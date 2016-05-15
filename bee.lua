@@ -1,6 +1,7 @@
 if require ~= nil then
   component = require("component")
   keyboard = require("keyboard")
+  event = require("event")
   version = "OpenComputers"
   print("Hold Ctrl+W to stop.")
 else
@@ -150,6 +151,26 @@ elseif version == "OpenComputers" then
 end
 
 print(#apiaries.." apiaries connected.")
+
+function removeDevice(device)
+  table.remove(device)
+end
+
+function addDevice(device)
+  if version == "ComputerCraft" then
+    if string.find(peripheral.getType(device), "apiculture") and peripheral.getType(device):sub(21,21) == "0" then
+      table.insert(apiaries, Apiary(peripheral.wrap(device)))
+      return true
+    end
+  elseif version == "OpenComputers" then
+    if string.find(component.type(device), "apiculture") and device:sub(21,21) == "0" then
+      table.insert(apiaries, Apiary(component.proxy(device)))
+      return true
+    end
+  end
+
+  return false
+end
 
 ----------------------
 -- The main loop
