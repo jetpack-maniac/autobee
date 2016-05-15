@@ -125,9 +125,17 @@ end
 -- End Apiary class
 --------------------------------------------------------------------------------
 
+function size(input)
+  local count = 0
+  for _, _ in pairs(input) do
+    count = count + 1
+  end
+  return count
+end
+
 function removeDevice(device)
   apiaries[device] = nil
-  print(#apiaries.." apiaries connected.")
+  print(size(apiaries).." apiaries connected.")
 end
 
 function addDevice(address)
@@ -141,7 +149,7 @@ function addDevice(address)
     local type = component.type(address) -- address is the address
     if string.find(type, "apiculture") and type:sub(21,21) == "0" then
       apiaries[address] = Apiary(component.proxy(address))
-      print(#apiaries.." apiaries connected.")
+      print(size(apiaries).." apiaries connected.")
       return true
     end
   end
@@ -183,7 +191,8 @@ while true do
     if keyboard.isKeyDown(keyboard.keys.w) and keyboard.isControlDown() then
       event.ignore("component_available",addDevice)
       event.ignore("component_removed",removeDevice)
-      os.exit()
+      os.sleep(0.4)
+      break
     end
   end
   os.sleep(delay)
