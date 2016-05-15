@@ -218,9 +218,9 @@ while true do
     if event == "timer" then
       checkApiaries()
     elseif event == "peripheral" then
-      deviceConnect(address)
+      addDevice(address)
     elseif event == "peripheral_detach" then
-      deviceDisconnect(address)
+      removeDevice(address)
     end
   end
 end
