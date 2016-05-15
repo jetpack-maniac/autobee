@@ -7,6 +7,8 @@ chestDir = "up"
 delay = 2
 --- End of Configuration
 
+local timer = 0
+
 if require ~= nil then
   component = require("component")
   keyboard = require("keyboard")
@@ -17,7 +19,7 @@ if require ~= nil then
 else
   version = "ComputerCraft"
   print("Hold Ctrl+T to terminate program.")
-  os.startTimer(delay)
+  timer = os.startTimer(delay)
 end
 
 local apiaries = {}
@@ -214,13 +216,25 @@ while true do
   end
 
   if version == "ComputerCraft" then
-    event, address = os.pullEvent()
+    event, data = os.pullEvent()
     if event == "timer" then
       checkApiaries()
     elseif event == "peripheral" then
-      addDevice(address)
+      addDevice(data)
     elseif event == "peripheral_detach" then
-      removeDevice(address)
+      removeDevice(data)
+    elseif event == "key_up" and data == keys.l then
+      term.clear()
+      term.setCursorPos(1,1)
+      print(size(apiaries).." apiaries connected.")
+    elseif event == "key_up" and data == keys.w then
+      print()
+      if timer > 0 then
+        os.cancelTimer(timer)
+      end
+      break
     end
   end
 end
+
+print("Program terminated.")
