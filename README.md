@@ -1,5 +1,5 @@
 # AutoBee v1.0
-Last Updated: 14 May 2016
+Last Updated: 15 May 2016
 
 ## 1. Purpose
 
@@ -62,6 +62,6 @@ The layout must be properly built by the individual before the system can run.  
 ## 6. Links
 
 - OpenComputers Forum Page: https://oc.cil.li/index.php?/topic/913-autobee-automate-your-forestry-bees/
-- ComputerCraft Forum Page:
+- ComputerCraft Forum Page: http://www.computercraft.info/forums2/index.php?/topic/26629-autobee-automate-your-forestry-bees/
 - Pastebin: http://pastebin.com/32eLm50M
 - Github: https://github.com/jetpack-maniac/autobee
