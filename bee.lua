@@ -15,10 +15,12 @@ if require ~= nil then
   event = require("event")
   term = require("term")
   version = "OpenComputers"
-  print("Hold Ctrl+W to stop.")
+  print("AutoBee running.")
+  print("Hold Ctrl+W to stop. Hold Ctrl+L to clear terminal.")
 else
   version = "ComputerCraft"
-  print("Hold Ctrl+T to terminate program.")
+  print("AutoBee running.")
+  print("Press W to terminate program. Press L to clear terminal.")
   timer = os.startTimer(delay)
 end
 
@@ -210,6 +212,8 @@ while true do
     end
     if keyboard.isKeyDown(keyboard.keys.l) and keyboard.isControlDown() then
       term.clear()
+      print("AutoBee running.")
+      print("Hold Ctrl+W to stop. Hold Ctrl+L to clear terminal.")
       print(size(apiaries).." apiaries connected.")
     end
     os.sleep(delay)
@@ -226,6 +230,8 @@ while true do
     elseif event == "key_up" and data == keys.l then
       term.clear()
       term.setCursorPos(1,1)
+      print("AutoBee running.")
+      print("Press W to terminate program. Press L to clear terminal.")
       print(size(apiaries).." apiaries connected.")
     elseif event == "key_up" and data == keys.w then
       print()

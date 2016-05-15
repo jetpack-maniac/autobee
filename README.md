@@ -61,7 +61,7 @@ The layout must be properly built by the individual before the system can run.  
 
 ## 6. Links
 
-- OpenComputers Forum Page:
+- OpenComputers Forum Page: https://oc.cil.li/index.php?/topic/913-autobee-automate-your-forestry-bees/
 - ComputerCraft Forum Page:
 - Pastebin: http://pastebin.com/32eLm50M
 - Github: https://github.com/jetpack-maniac/autobee
