@@ -17,6 +17,7 @@ if require ~= nil then
 else
   version = "ComputerCraft"
   print("Hold Ctrl+T to terminate program.")
+  os.startTimer(delay)
 end
 
 local apiaries = {}
@@ -127,6 +128,14 @@ end
 --------------------------------------------------------------------------------
 -- Misc Functions
 
+function checkApiaries()
+  for i, apiary in pairs(apiaries) do
+    apiary.populatePrincessSlot()
+    apiary.populateDroneSlot()
+    apiary.emptyOutput()
+  end
+end
+
 function size(input)
   local count = 0
   for _, _ in pairs(input) do
@@ -190,13 +199,8 @@ end
 ----------------------
 
 while true do
-  for i, apiary in pairs(apiaries) do
-    apiary.populatePrincessSlot()
-    apiary.populateDroneSlot()
-    apiary.emptyOutput()
-  end
-
   if version == "OpenComputers" then
+    checkApiaries()
     if keyboard.isKeyDown(keyboard.keys.w) and keyboard.isControlDown() then
       event.ignore("component_available",deviceConnect)
       event.ignore("component_removed",deviceDisconnect)
@@ -206,6 +210,17 @@ while true do
       term.clear()
       print(size(apiaries).." apiaries connected.")
     end
+    os.sleep(delay)
   end
-  os.sleep(delay)
+
+  if version == "ComputerCraft" then
+    event, address = os.pullEvent()
+    if event == "timer" then
+      checkApiaries()
+    elseif event == "peripheral" then
+      deviceConnect(address)
+    elseif event == "peripheral_detach" then
+      deviceDisconnect(address)
+    end
+  end
 end
