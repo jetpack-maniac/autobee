@@ -143,7 +143,7 @@ elseif version == "OpenComputers" then
   for address, device in pairs(devices) do
     if string.find(device, "apiculture") and device:sub(21,21) == "0" then
       table.insert(apiaries, Apiary(component.proxy(address)))
-    elseif string.find(device, "apiculture") and peripheral.getType(device):sub(21,21) == "2" then
+    elseif string.find(device, "apiculture") and device:sub(21,21) == "2" then
       print("Warning: Bee house detected.  It cannot be used with this program.")
     end
   end
