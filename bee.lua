@@ -1,3 +1,12 @@
+--- Configuration
+-- The max size of the output inventory
+chestSize = 27
+-- chest direction relative to apiary
+chestDir = "up"
+-- how long the computer will wait before checking the apiaries
+delay = 2
+--- End of Configuration
+
 if require ~= nil then
   component = require("component")
   keyboard = require("keyboard")
@@ -8,15 +17,6 @@ else
   version = "ComputerCraft"
   print("Hold Ctrl+T to terminate program.")
 end
-
---- Configuration
--- The max size of the output inventory
-chestSize = 27
--- chest direction relative to apiary
-chestDir = "up"
--- how long the computer will wait before checking the apiaries
-delay = 2
---- End of Configuration
 
 local apiaries = {}
 local monitors = {}
