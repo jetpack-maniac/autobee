@@ -130,17 +130,17 @@ function removeDevice(device)
   print(#apiaries.." apiaries connected.")
 end
 
-function addDevice(device)
-  if device == nil then return false end
-  if version == "ComputerCraft" then -- Device is the 'side'
-    if string.find(peripheral.getType(device), "apiculture") and peripheral.getType(device):sub(21,21) == "0" then
-      apiaries[device] = Apiary(peripheral.wrap(device))
+function addDevice(address)
+  if address == nil then return false end
+  if version == "ComputerCraft" then -- address is the 'side'
+    if string.find(peripheral.getType(address), "apiculture") and peripheral.getType(address):sub(21,21) == "0" then
+      apiaries[address] = Apiary(peripheral.wrap(address))
       return true
     end
   elseif version == "OpenComputers" then
-    local type = component.type(device) -- Device is the address
+    local type = component.type(address) -- address is the address
     if string.find(type, "apiculture") and type:sub(21,21) == "0" then
-      apiaries[device] = Apiary(component.proxy(device))
+      apiaries[address] = Apiary(component.proxy(address))
       print(#apiaries.." apiaries connected.")
       return true
     end
@@ -165,7 +165,7 @@ elseif version == "OpenComputers" then
     addDevice(address)
   end
   event.listen("component_added",function(event, address) addDevice(address) end)
-  event.listen("component_removed",function(event, address) print (address) removeDevice(address) end)
+  event.listen("component_removed",function(event, address) removeDevice(address) end)
 end
 
 ----------------------
