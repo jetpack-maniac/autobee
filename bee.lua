@@ -125,6 +125,30 @@ end
 -- End Apiary class
 --------------------------------------------------------------------------------
 
+function removeDevice(device)
+  print("Device removed")
+  table.remove(device)
+end
+
+function addDevice(device)
+  print("New device!")
+  if version == "ComputerCraft" then
+    if string.find(peripheral.getType(device), "apiculture") and peripheral.getType(device):sub(21,21) == "0" then
+      table.insert(apiaries, Apiary(peripheral.wrap(device)))
+      return true
+    end
+  elseif version == "OpenComputers" then
+    print(component.type(device))
+    if string.find(component.type(device), "apiculture") and device:sub(21,21) == "0" then
+      table.insert(apiaries, Apiary(component.proxy(device)))
+      print(device)
+      return true
+    end
+  end
+
+  return false
+end
+
 -- Find apiaries
 -- tile_for_apiculture_0_name_0 is an apiary
 -- tile_for_apiculture_2_name_0 is a bee house
@@ -148,29 +172,12 @@ elseif version == "OpenComputers" then
       print("Warning: Bee house detected.  It cannot be used with this program.")
     end
   end
+  event.listen("component_available",addDevice(device))
+  event.listen("component_removed",removeDevice(device))
 end
 
 print(#apiaries.." apiaries connected.")
 
-function removeDevice(device)
-  table.remove(device)
-end
-
-function addDevice(device)
-  if version == "ComputerCraft" then
-    if string.find(peripheral.getType(device), "apiculture") and peripheral.getType(device):sub(21,21) == "0" then
-      table.insert(apiaries, Apiary(peripheral.wrap(device)))
-      return true
-    end
-  elseif version == "OpenComputers" then
-    if string.find(component.type(device), "apiculture") and device:sub(21,21) == "0" then
-      table.insert(apiaries, Apiary(component.proxy(device)))
-      return true
-    end
-  end
-
-  return false
-end
 
 ----------------------
 -- The main loop
@@ -185,6 +192,8 @@ while true do
 
   if version == "OpenComputers" then
     if keyboard.isKeyDown(keyboard.keys.w) and keyboard.isControlDown() then
+      event.ignore("component_available",addDevice)
+      event.ignore("component_removed",removeDevice)
       os.exit()
     end
   end
