@@ -126,21 +126,21 @@ end
 --------------------------------------------------------------------------------
 
 function removeDevice(device)
-  table.remove(apiaries, device)
+  apiaries[device] = nil
   print(#apiaries.." apiaries connected.")
 end
 
 function addDevice(device)
   if device == nil then return false end
-  if version == "ComputerCraft" then
+  if version == "ComputerCraft" then -- Device is the 'side'
     if string.find(peripheral.getType(device), "apiculture") and peripheral.getType(device):sub(21,21) == "0" then
-      table.insert(apiaries, Apiary(peripheral.wrap(device)))
+      apiaries[device] = Apiary(peripheral.wrap(device))
       return true
     end
   elseif version == "OpenComputers" then
-    local type = component.type(device)
+    local type = component.type(device) -- Device is the address
     if string.find(type, "apiculture") and type:sub(21,21) == "0" then
-      table.insert(apiaries, Apiary(component.proxy(device)))
+      apiaries[device] = Apiary(component.proxy(device))
       print(#apiaries.." apiaries connected.")
       return true
     end
