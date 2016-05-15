@@ -173,7 +173,7 @@ end
 ----------------------
 
 while true do
-  for i, apiary in ipairs(apiaries) do
+  for i, apiary in pairs(apiaries) do
     apiary.populatePrincessSlot()
     apiary.populateDroneSlot()
     apiary.emptyOutput()
