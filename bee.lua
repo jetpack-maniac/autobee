@@ -126,22 +126,22 @@ end
 --------------------------------------------------------------------------------
 
 function removeDevice(device)
-  print("Device removed")
-  table.remove(device)
+  table.remove(apiaries, device)
+  print(#apiaries.." apiaries connected.")
 end
 
 function addDevice(device)
-  print("New device!")
+  if device == nil then return false end
   if version == "ComputerCraft" then
     if string.find(peripheral.getType(device), "apiculture") and peripheral.getType(device):sub(21,21) == "0" then
       table.insert(apiaries, Apiary(peripheral.wrap(device)))
       return true
     end
   elseif version == "OpenComputers" then
-    print(component.type(device))
-    if string.find(component.type(device), "apiculture") and device:sub(21,21) == "0" then
+    local type = component.type(device)
+    if string.find(type, "apiculture") and type:sub(21,21) == "0" then
       table.insert(apiaries, Apiary(component.proxy(device)))
-      print(device)
+      print(#apiaries.." apiaries connected.")
       return true
     end
   end
@@ -157,27 +157,16 @@ end
 if version == "ComputerCraft" then
   local devices = peripheral.getNames()
   for _, device in ipairs(devices) do
-    if string.find(peripheral.getType(device), "apiculture") and peripheral.getType(device):sub(21,21) == "0" then
-      table.insert(apiaries, Apiary(peripheral.wrap(device)))
-    elseif string.find(peripheral.getType(device), "apiculture") and peripheral.getType(device):sub(21,21) == "2" then
-      print("Warning: Bee house detected.  It cannot be used with this program.")
-    end
+    addDevice(device)
   end
 elseif version == "OpenComputers" then
   local devices = component.list()
   for address, device in pairs(devices) do
-    if string.find(device, "apiculture") and device:sub(21,21) == "0" then
-      table.insert(apiaries, Apiary(component.proxy(address)))
-    elseif string.find(device, "apiculture") and device:sub(21,21) == "2" then
-      print("Warning: Bee house detected.  It cannot be used with this program.")
-    end
+    addDevice(address)
   end
-  event.listen("component_available",addDevice(device))
-  event.listen("component_removed",removeDevice(device))
+  event.listen("component_added",function(event, address) addDevice(address) end)
+  event.listen("component_removed",function(event, address) print (address) removeDevice(address) end)
 end
-
-print(#apiaries.." apiaries connected.")
-
 
 ----------------------
 -- The main loop
