@@ -11,6 +11,7 @@ if require ~= nil then
   component = require("component")
   keyboard = require("keyboard")
   event = require("event")
+  term = require("term")
   version = "OpenComputers"
   print("Hold Ctrl+W to stop.")
 else
@@ -152,6 +153,7 @@ function addDevice(address)
   if version == "ComputerCraft" then -- address is the 'side'
     if string.find(peripheral.getType(address), "apiculture") and peripheral.getType(address):sub(21,21) == "0" then
       apiaries[address] = Apiary(peripheral.wrap(address))
+      print(size(apiaries).." apiaries connected.")
       return true
     end
   elseif version == "OpenComputers" then
@@ -165,11 +167,6 @@ function addDevice(address)
 
   return false
 end
-
--- Find apiaries
--- tile_for_apiculture_0_name_0 is an apiary
--- tile_for_apiculture_2_name_0 is a bee house
--- bee houses can be hooked up but cannot be used
 
 if version == "ComputerCraft" then
   local devices = peripheral.getNames()
@@ -204,6 +201,10 @@ while true do
       event.ignore("component_available",deviceConnect)
       event.ignore("component_removed",deviceDisconnect)
       break
+    end
+    if keyboard.isKeyDown(keyboard.keys.l) and keyboard.isControlDown() then
+      term.clear()
+      print(size(apiaries).." apiaries connected.")
     end
   end
   os.sleep(delay)
