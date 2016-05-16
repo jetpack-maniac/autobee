@@ -148,6 +148,7 @@ function size(input)
   return count
 end
 
+--These next two functions are callbacks to enable OC events to work properly
 function deviceConnect(event, address)
   addDevice(address)
 end
@@ -223,6 +224,7 @@ while true do
     event, data = os.pullEvent()
     if event == "timer" then
       checkApiaries()
+      timer = os.startTimer(delay)
     elseif event == "peripheral" then
       addDevice(data)
     elseif event == "peripheral_detach" then
