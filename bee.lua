@@ -7,8 +7,6 @@ chestDir = "up"
 delay = 2
 --- End of Configuration
 
-local timer = 0
-
 if require ~= nil then
   component = require("component")
   keyboard = require("keyboard")
@@ -21,10 +19,9 @@ else
   version = "ComputerCraft"
   print("AutoBee running.")
   print("Press W to terminate program. Press L to clear terminal.")
-  timer = os.startTimer(delay)
 end
 
-local apiaries = {}
+local timerID = {}
 local monitors = {}
 
 --------------------------------------------------------------------------------
@@ -134,6 +131,7 @@ end
 -- Misc Functions
 
 function checkApiary(apiary)
+  print("Check")
   apiary.populatePrincessSlot()
   apiary.populateDroneSlot()
   apiary.emptyOutput()
@@ -158,26 +156,28 @@ end
 
 function removeDevice(device)
   if version == "OpenComputers" then
-    event.cancel(apiaries[device])
+    event.cancel(timerID[device])
   end
-  apiaries[device] = nil
-  print(size(apiaries).." apiaries connected.")
+  timerID[device] = nil
+  print(size(timerID).." apiaries connected.")
 end
 
 function addDevice(address)
   if address == nil then return false end
   if version == "ComputerCraft" then -- address is the 'side'
     if string.find(peripheral.getType(address), "apiculture") and peripheral.getType(address):sub(21,21) == "0" then
-      apiaries[address] = Apiary(peripheral.wrap(address))
-      print(size(apiaries).." apiaries connected.")
+      local lol = os.startTimer(delay)
+      print("Start ID:"..lol)
+      timerID[lol] = Apiary(peripheral.wrap(address))
+      print(size(timerID).." apiaries connected.")
       return true
     end
   elseif version == "OpenComputers" then
     local type = component.type(address) -- address is the address
     if string.find(type, "apiculture") and type:sub(21,21) == "0" then
       local apiary = Apiary(component.proxy(address))
-      apiaries[address] = event.timer(2, function() checkApiary(apiary) end, math.huge)
-      print(size(apiaries).." apiaries connected.")
+      timerID[address] = event.timer(delay, function() checkApiary(apiary) end, math.huge)
+      print(size(timerID).." apiaries connected.")
       return true
     end
   end
@@ -211,7 +211,7 @@ while true do
     if keyboard.isKeyDown(keyboard.keys.w) and keyboard.isControlDown() then
       event.ignore("component_available",deviceConnect)
       event.ignore("component_removed",deviceDisconnect)
-      for address, _ in pairs(apiaries) do
+      for address, _ in pairs(timerID) do
         removeDevice(address)
       end
       break
@@ -220,7 +220,7 @@ while true do
       term.clear()
       print("AutoBee running.")
       print("Hold Ctrl+W to stop. Hold Ctrl+L to clear terminal.")
-      print(size(apiaries).." apiaries connected.")
+      print(size(timerID).." apiaries connected.")
     end
     os.sleep(delay)
   end
@@ -228,7 +228,10 @@ while true do
   if version == "ComputerCraft" then
     event, data = os.pullEvent()
     if event == "timer" then
-      timer = os.startTimer(delay)
+      print("End ID:"..data)
+      checkApiary(timerID[data])
+      timerID[os.startTimer(delay)] = timerID[data]
+      timerID[data] = nil
     elseif event == "peripheral" then
       addDevice(data)
     elseif event == "peripheral_detach" then
@@ -238,7 +241,7 @@ while true do
       term.setCursorPos(1,1)
       print("AutoBee running.")
       print("Press W to terminate program. Press L to clear terminal.")
-      print(size(apiaries).." apiaries connected.")
+      print(size(timerID).." apiaries connected.")
     elseif event == "key_up" and data == keys.w then
       print()
       if timer > 0 then
