@@ -157,7 +157,7 @@ function deviceDisconnect(event, address)
 end
 
 function removeDevice(device)
-  event.cancel(apiaries[address])
+  event.cancel(apiaries[device])
   apiaries[device] = nil
   print(size(apiaries).." apiaries connected.")
 end
@@ -209,6 +209,9 @@ while true do
     if keyboard.isKeyDown(keyboard.keys.w) and keyboard.isControlDown() then
       event.ignore("component_available",deviceConnect)
       event.ignore("component_removed",deviceDisconnect)
+      for address, _ in pairs(apiaries) do
+        removeDevice(address)
+      end
       break
     end
     if keyboard.isKeyDown(keyboard.keys.l) and keyboard.isControlDown() then
