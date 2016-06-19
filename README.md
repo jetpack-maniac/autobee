@@ -1,5 +1,5 @@
 # AutoBee v1.0
-Last Updated: 15 May 2016
+Last Updated: 16 June 2016
 
 ## 1. Purpose
 
