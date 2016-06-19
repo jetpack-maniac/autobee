@@ -76,6 +76,7 @@ function Apiary(apiary)
 
   function self.emptyOutput()
     for slot=3,9 do
+      -- print(slot)
       if apiary.getStackInSlot(slot) ~= nil then
         if self.isPrincessOrQueen(slot) then
           self.pushPrincess(slot)
@@ -132,12 +133,10 @@ end
 --------------------------------------------------------------------------------
 -- Misc Functions
 
-function checkApiaries()
-  for i, apiary in pairs(apiaries) do
-    apiary.populatePrincessSlot()
-    apiary.populateDroneSlot()
-    apiary.emptyOutput()
-  end
+function checkApiary(apiary)
+  apiary.populatePrincessSlot()
+  apiary.populateDroneSlot()
+  apiary.emptyOutput()
 end
 
 function size(input)
@@ -158,6 +157,7 @@ function deviceDisconnect(event, address)
 end
 
 function removeDevice(device)
+  event.cancel(apiaries[address])
   apiaries[device] = nil
   print(size(apiaries).." apiaries connected.")
 end
@@ -173,7 +173,8 @@ function addDevice(address)
   elseif version == "OpenComputers" then
     local type = component.type(address) -- address is the address
     if string.find(type, "apiculture") and type:sub(21,21) == "0" then
-      apiaries[address] = Apiary(component.proxy(address))
+      local apiary = Apiary(component.proxy(address))
+      apiaries[address] = event.timer(2, function() checkApiary(apiary) end, math.huge)
       print(size(apiaries).." apiaries connected.")
       return true
     end
@@ -205,7 +206,7 @@ end
 
 while true do
   if version == "OpenComputers" then
-    checkApiaries()
+    -- checkApiary()
     if keyboard.isKeyDown(keyboard.keys.w) and keyboard.isControlDown() then
       event.ignore("component_available",deviceConnect)
       event.ignore("component_removed",deviceDisconnect)
@@ -223,7 +224,7 @@ while true do
   if version == "ComputerCraft" then
     event, data = os.pullEvent()
     if event == "timer" then
-      checkApiaries()
+      -- checkApiary()
       timer = os.startTimer(delay)
     elseif event == "peripheral" then
       addDevice(data)
