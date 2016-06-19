@@ -166,9 +166,7 @@ function addDevice(address)
   if address == nil then return false end
   if version == "ComputerCraft" then -- address is the 'side'
     if string.find(peripheral.getType(address), "apiculture") and peripheral.getType(address):sub(21,21) == "0" then
-      local lol = os.startTimer(delay)
-      print("Start ID:"..lol)
-      timerID[lol] = Apiary(peripheral.wrap(address))
+      timerID[os.startTimer(delay)] = Apiary(peripheral.wrap(address))
       print(size(timerID).." apiaries connected.")
       return true
     end
@@ -228,7 +226,6 @@ while true do
   if version == "ComputerCraft" then
     event, data = os.pullEvent()
     if event == "timer" then
-      print("End ID:"..data)
       checkApiary(timerID[data])
       timerID[os.startTimer(delay)] = timerID[data]
       timerID[data] = nil
