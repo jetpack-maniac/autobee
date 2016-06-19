@@ -157,7 +157,9 @@ function deviceDisconnect(event, address)
 end
 
 function removeDevice(device)
-  event.cancel(apiaries[device])
+  if version == "OpenComputers" then
+    event.cancel(apiaries[device])
+  end
   apiaries[device] = nil
   print(size(apiaries).." apiaries connected.")
 end
