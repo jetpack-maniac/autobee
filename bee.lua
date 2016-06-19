@@ -206,7 +206,6 @@ end
 
 while true do
   if version == "OpenComputers" then
-    -- checkApiary()
     if keyboard.isKeyDown(keyboard.keys.w) and keyboard.isControlDown() then
       event.ignore("component_available",deviceConnect)
       event.ignore("component_removed",deviceDisconnect)
@@ -224,7 +223,6 @@ while true do
   if version == "ComputerCraft" then
     event, data = os.pullEvent()
     if event == "timer" then
-      -- checkApiary()
       timer = os.startTimer(delay)
     elseif event == "peripheral" then
       addDevice(data)
