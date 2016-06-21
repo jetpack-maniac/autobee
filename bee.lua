@@ -130,8 +130,15 @@ end
 --------------------------------------------------------------------------------
 -- Misc Functions
 
+function errorHandling()
+  if getStackInSlot == nil then
+    print("AutoBee Error: This game server lacks OpenPeripherals.")
+    print("It can be found at: https://openmods.info/")
+    return true
+  end
+end
+
 function checkApiary(apiary)
-  print("Check")
   apiary.populatePrincessSlot()
   apiary.populateDroneSlot()
   apiary.emptyOutput()
@@ -203,6 +210,14 @@ end
 ----------------------
 -- The main loop
 ----------------------
+
+if errorHandling() == true then
+  if version == "OpenComputers" then
+    os.exit()
+  else
+    shell.exit()
+  end
+end
 
 while true do
   if version == "OpenComputers" then
