@@ -24,11 +24,25 @@ end
 local timerID = {}
 local monitors = {}
 
+function dependencyCheck(device)
+  if device.getStackInSlot == nil then
+    print("AutoBee Error: This game server lacks OpenPeripherals.")
+    print("It can be found at: https://openmods.info/")
+    if version == "OpenComputers" then
+      os.exit()
+    else
+      shell.exit()
+    end
+  end
+end
+
 --------------------------------------------------------------------------------
 -- Apiary class
 
 function Apiary(device)
   local self = {}
+
+  dependencyCheck(device)
 
   -- Checks to see if the princess/queen slot (1) is empty or full and modifies
   -- queen and princess accordingly
@@ -130,14 +144,6 @@ end
 --------------------------------------------------------------------------------
 -- Misc Functions
 
-function dependencyCheck()
-  if getStackInSlot == nil then
-    print("AutoBee Error: This game server lacks OpenPeripherals.")
-    print("It can be found at: https://openmods.info/")
-    return true
-  end
-end
-
 function checkApiary(apiary)
   apiary.populatePrincessSlot()
   apiary.populateDroneSlot()
@@ -210,14 +216,6 @@ end
 ----------------------
 -- The main loop
 ----------------------
-
-if dependencyCheck() == true then
-  if version == "OpenComputers" then
-    os.exit()
-  else
-    shell.exit()
-  end
-end
 
 while true do
   if version == "OpenComputers" then
