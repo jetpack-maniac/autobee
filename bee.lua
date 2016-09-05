@@ -3,7 +3,7 @@
 chestSize = 27
 -- chest direction relative to apiary
 chestDir = "up"
--- how long the computer will wait before checking the apiaries
+-- how long the computer will wait in seconds before checking the apiaries
 delay = 2
 --- End of Configuration
 
