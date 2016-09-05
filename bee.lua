@@ -130,7 +130,7 @@ end
 --------------------------------------------------------------------------------
 -- Misc Functions
 
-function errorHandling()
+function dependencyCheck()
   if getStackInSlot == nil then
     print("AutoBee Error: This game server lacks OpenPeripherals.")
     print("It can be found at: https://openmods.info/")
@@ -211,7 +211,7 @@ end
 -- The main loop
 ----------------------
 
-if errorHandling() == true then
+if dependencyCheck() == true then
   if version == "OpenComputers" then
     os.exit()
   else
