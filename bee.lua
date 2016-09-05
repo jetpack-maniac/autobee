@@ -27,60 +27,60 @@ local monitors = {}
 --------------------------------------------------------------------------------
 -- Apiary class
 
-function Apiary(apiary)
+function Apiary(device)
   local self = {}
 
   -- Checks to see if the princess/queen slot (1) is empty or full and modifies
   -- queen and princess accordingly
   function self.isPrincessSlotOccupied()
-    return apiary.getStackInSlot(1) ~= nil
+    return device.getStackInSlot(1) ~= nil
   end
 
   -- Checks to see if the drone slot (2) is empty or full and modifies
   -- drone accordingly
   function self.isDroneSlotOccupied()
-     return apiary.getStackInSlot(2) ~= nil
+     return device.getStackInSlot(2) ~= nil
   end
 
   -- Removes a princess from the output to it's proper chest slot
   function self.pushPrincess(slot)
-    apiary.pushItemIntoSlot(chestDir,slot,1,chestSize)
+    device.pushItemIntoSlot(chestDir,slot,1,chestSize)
   end
 
   -- Pulls princess or queen from appropriate chest slot
   function self.pullPrincess()
-    apiary.pullItemIntoSlot(chestDir,chestSize,1,1)
+    device.pullItemIntoSlot(chestDir,chestSize,1,1)
   end
 
   -- Removes a drone from the output to it's proper chest slot
   function self.pushDrone(slot)
-    apiary.pushItemIntoSlot(chestDir,slot,64,chestSize-1)
+    device.pushItemIntoSlot(chestDir,slot,64,chestSize-1)
   end
 
   -- Pulls drone from appropriate chest slot
   function self.pullDrone()
-    apiary.pullItemIntoSlot(chestDir,chestSize-1,64,2)
+    device.pullItemIntoSlot(chestDir,chestSize-1,64,2)
   end
 
   function self.isPrincessOrQueen(slot)
-    local name = apiary.getStackInSlot(slot).name
+    local name = device.getStackInSlot(slot).name
     return name == "beePrincessGE" or name == "beeQueenGE"
   end
 
   function self.isDrone(slot)
-    return apiary.getStackInSlot(slot).name == "beeDroneGE"
+    return device.getStackInSlot(slot).name == "beeDroneGE"
   end
 
   function self.emptyOutput()
     for slot=3,9 do
       -- print(slot)
-      if apiary.getStackInSlot(slot) ~= nil then
+      if device.getStackInSlot(slot) ~= nil then
         if self.isPrincessOrQueen(slot) then
           self.pushPrincess(slot)
         elseif self.isDrone(slot) then
           self.pushDrone(slot)
         else
-          apiary.pushItemIntoSlot(chestDir,slot)
+          device.pushItemIntoSlot(chestDir,slot)
         end
       end
     end
@@ -93,7 +93,7 @@ function Apiary(apiary)
       if self.isPrincessSlotOccupied() == false then
         for slot=3,9 do
           -- We will only get princesses in the output, never a queen
-          if apiary.getStackInSlot(slot) ~= nil and self.isPrincessOrQueen(slot) then
+          if device.getStackInSlot(slot) ~= nil and self.isPrincessOrQueen(slot) then
             self.pushPrincess(slot)
             self.pullPrincess()
           end
@@ -108,7 +108,7 @@ function Apiary(apiary)
       -- If we didn't get a drone from our chest check the output
       if self.isDroneSlotOccupied() == false then
         for slot=3,9 do
-          if apiary.getStackInSlot(slot) ~= nil and self.isDrone(slot) then
+          if device.getStackInSlot(slot) ~= nil and self.isDrone(slot) then
             self.pushDrone(slot)
             self.pullDrone()
           end
@@ -116,7 +116,7 @@ function Apiary(apiary)
       end
     else -- drone is occupied
       for slot=3,9 do
-        if apiary.getStackInSlot(slot) ~= nil and self.isDrone(slot) then
+        if device.getStackInSlot(slot) ~= nil and self.isDrone(slot) then
             self.pushDrone(slot)
         end
       end
