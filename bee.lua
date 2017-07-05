@@ -112,12 +112,21 @@ function Apiary(device)
   end
 
   function self.isPrincessOrQueen(slot)
-    local name = self.checkSlot(slot).name
-    return name == "beePrincessGE" or name == "beeQueenGE"
+    if self.checkSlot(slot) ~= nil then
+      local name = self.checkSlot(slot).name
+      return name == "beePrincessGE" or name == "beeQueenGE" or name == "forestry:beePrincessGE" or name == "forestry:beeQueenGE"
+    else
+      return false
+    end
   end
 
   function self.isDrone(slot)
-    return self.checkSlot(slot).name == "beeDroneGE"
+    if self.checkSlot(slot) ~= nil then
+      local name = self.checkSlot(slot).name
+      return name == "beeDroneGE" or name == "forestry:beeDroneGE"
+    else
+      return false
+    end
   end
 
   -- Interfaces
@@ -131,8 +140,10 @@ function Apiary(device)
   -- Interface for item pushing, follows the OpenPeripherals/Plethora format directly
   function self.push(destinationEntity, fromSlot, amount, destinationSlot)
     if peripheralVersion == "Plethora" then
-      if pcall(function() device.pushItems(destinationEntity, 0, 1, 0) end) then
-        return device.pushItems(destinationEntity, fromSlot, amount, destinationSlot)
+      if pcall(function() device.pushItems(destinationEntity, fromSlot, amount, destinationSlot) end) then
+        return true
+      else
+        print("PCall failed push")
       end
     end 
   end
@@ -140,8 +151,10 @@ function Apiary(device)
   -- Interface for item pulling,  follows the OpenPeripherals/Plethora format directly
   function self.pull(sourceEntity, fromSlot, amount, destinationSlot)
     if peripheralVersion == "Plethora" then
-      if pcall(function() device.pullItems(sourceEntity, 0, 1, 0) end) then
-        return device.pullItems(sourceEntity, fromSlot, amount, destinationSlot)
+      if pcall(function() device.pullItems(sourceEntity, fromSlot, amount, destinationSlot) end) then
+        return true
+      else
+        print("PCall failed pull")
       end
     end 
   end
@@ -159,6 +172,27 @@ function Apiary(device)
           self.push(chestDir,slot)
         end
       end
+    end
+  end
+
+  function self.checkOutput()
+    for slot=3,9 do
+      -- Is what we are looking at a princess?
+      if self.isPrincessOrQueen(slot) then
+        if self.isPrincessSlotOccupied() == true then
+          self.push(chestDir, slot)
+        else
+          self.movePrincess(slot)
+        end
+      end
+      -- Is what we are looking at a drone?
+      if self.isDrone(slot) then
+        if self.isDroneSlotOccupied() == true then
+          self.push(chestDir, slot)
+        else
+          self.moveDrone(slot)
+        end
+      end      
     end
   end
 
@@ -193,7 +227,7 @@ function Apiary(device)
     else -- drone is occupied
       for slot=3,9 do
         if self.checkSlot(slot) ~= nil and self.isDrone(slot) then
-            self.pushDrone(slot)
+          self.pushDrone(slot)
         end
       end
     end
@@ -207,9 +241,10 @@ end
 -- Misc Functions
 
 function checkApiary(apiary)
-  apiary.populatePrincessSlot()
-  apiary.populateDroneSlot()
-  apiary.emptyOutput()
+  -- apiary.populatePrincessSlot()
+  -- apiary.populateDroneSlot()
+  -- apiary.emptyOutput()
+  apiary.checkOutput()
 end
 
 function size(input)
@@ -315,7 +350,6 @@ while true do
       print("Press W to terminate program. Press L to clear terminal.")
       print(size(apiaryID).." apiaries connected.")
     elseif event == "key_up" and data == keys.w then
-      print()
       if timer ~= nil and timer > 0 then
         os.cancelTimer(timer)
       end
