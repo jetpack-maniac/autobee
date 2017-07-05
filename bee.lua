@@ -7,7 +7,13 @@ chestDir = "up"
 delay = 2
 --- End of Configuration
 
-if require ~= nil then
+if os.version ~= nil then -- This is a ComputerCraft OS API method
+  if os.version() == "CraftOS 1.8" then -- This is ComputerCraft for 1.9/1.10
+    version = "ComputerCraft"
+    print("AutoBee running.")
+    print("Press W to terminate program. Press L to clear terminal.")
+  end
+else
   component = require("component")
   keyboard = require("keyboard")
   event = require("event")
@@ -15,22 +21,20 @@ if require ~= nil then
   version = "OpenComputers"
   print("AutoBee running.")
   print("Hold Ctrl+W to stop. Hold Ctrl+L to clear terminal.")
-else
-  version = "ComputerCraft"
-  print("AutoBee running.")
-  print("Press W to terminate program. Press L to clear terminal.")
 end
 
-local timerID = {}
+
+
+local apiaryID = {}
 local monitors = {}
 
 function dependencyCheck(device)
-  if device.getStackInSlot == nil then
-    print("AutoBee Error: This game server lacks OpenPeripherals.")
-    print("It can be found at: https://openmods.info/")
+  if device.suck == nil then
+    print("AutoBee Error: This game server lacks the Forge mod: Plethora Peripherals.  It is required to run this program.")
+    print("It can be found at: https://squiddev-cc.github.io/plethora/")
     if version == "OpenComputers" then
       os.exit()
-    else
+    elseif version == "ComputerCraft" then
       shell.exit()
     end
   end
@@ -47,54 +51,54 @@ function Apiary(device)
   -- Checks to see if the princess/queen slot (1) is empty or full and modifies
   -- queen and princess accordingly
   function self.isPrincessSlotOccupied()
-    return device.getStackInSlot(1) ~= nil
+    return device.getItemMeta(1) ~= nil
   end
 
   -- Checks to see if the drone slot (2) is empty or full and modifies
   -- drone accordingly
   function self.isDroneSlotOccupied()
-     return device.getStackInSlot(2) ~= nil
+     return device.getItemMeta(2) ~= nil
   end
 
   -- Removes a princess from the output to it's proper chest slot
   function self.pushPrincess(slot)
-    device.pushItemIntoSlot(chestDir,slot,1,chestSize)
+    device.pushItems(chestDir,slot,1,chestSize)
   end
 
   -- Pulls princess or queen from appropriate chest slot
   function self.pullPrincess()
-    device.pullItemIntoSlot(chestDir,chestSize,1,1)
+    device.pullItems(chestDir,chestSize,1,1)
   end
 
   -- Removes a drone from the output to it's proper chest slot
   function self.pushDrone(slot)
-    device.pushItemIntoSlot(chestDir,slot,64,chestSize-1)
+    device.pushItems(chestDir,slot,64,chestSize-1)
   end
 
   -- Pulls drone from appropriate chest slot
   function self.pullDrone()
-    device.pullItemIntoSlot(chestDir,chestSize-1,64,2)
+    device.pullItems(chestDir,chestSize-1,64,2)
   end
 
   function self.isPrincessOrQueen(slot)
-    local name = device.getStackInSlot(slot).name
+    local name = device.getItemMeta(slot).name
     return name == "beePrincessGE" or name == "beeQueenGE"
   end
 
   function self.isDrone(slot)
-    return device.getStackInSlot(slot).name == "beeDroneGE"
+    return device.getItemMeta(slot).name == "beeDroneGE"
   end
 
   function self.emptyOutput()
     for slot=3,9 do
       -- print(slot)
-      if device.getStackInSlot(slot) ~= nil then
+      if device.getItemMeta(slot) ~= nil then
         if self.isPrincessOrQueen(slot) then
           self.pushPrincess(slot)
         elseif self.isDrone(slot) then
           self.pushDrone(slot)
         else
-          device.pushItemIntoSlot(chestDir,slot)
+          device.pushItems(chestDir,slot)
         end
       end
     end
@@ -107,7 +111,7 @@ function Apiary(device)
       if self.isPrincessSlotOccupied() == false then
         for slot=3,9 do
           -- We will only get princesses in the output, never a queen
-          if device.getStackInSlot(slot) ~= nil and self.isPrincessOrQueen(slot) then
+          if device.getItemMeta(slot) ~= nil and self.isPrincessOrQueen(slot) then
             self.pushPrincess(slot)
             self.pullPrincess()
           end
@@ -122,7 +126,7 @@ function Apiary(device)
       -- If we didn't get a drone from our chest check the output
       if self.isDroneSlotOccupied() == false then
         for slot=3,9 do
-          if device.getStackInSlot(slot) ~= nil and self.isDrone(slot) then
+          if device.getItemMeta(slot) ~= nil and self.isDrone(slot) then
             self.pushDrone(slot)
             self.pullDrone()
           end
@@ -130,7 +134,7 @@ function Apiary(device)
       end
     else -- drone is occupied
       for slot=3,9 do
-        if device.getStackInSlot(slot) ~= nil and self.isDrone(slot) then
+        if device.getItemMeta(slot) ~= nil and self.isDrone(slot) then
             self.pushDrone(slot)
         end
       end
@@ -169,26 +173,28 @@ end
 
 function removeDevice(device)
   if version == "OpenComputers" then
-    event.cancel(timerID[device])
+    event.cancel(apiaryID[device])
   end
-  timerID[device] = nil
-  print(size(timerID).." apiaries connected.")
+  apiaryID[device] = nil
+  print(size(apiaryID).." apiaries connected.")
 end
 
 function addDevice(address)
   if address == nil then return false end
-  if version == "ComputerCraft" then -- address is the 'side'
-    if string.find(peripheral.getType(address), "apiculture") and peripheral.getType(address):sub(21,21) == "0" then
-      timerID[os.startTimer(delay)] = Apiary(peripheral.wrap(address))
-      print(size(timerID).." apiaries connected.")
+  if version == "ComputerCraft" then -- address is the 'side' for ComputerCraft
+    -- if string.find(peripheral.getType(address), "apiculture") and peripheral.getType(address):sub(21,21) == "0" then
+    if string.find(peripheral.getType(address), "forestry_apiary") then
+      apiaryID[os.startTimer(delay)] = Apiary(peripheral.wrap(address))
+      print(size(apiaryID).." apiaries connected.")
       return true
     end
   elseif version == "OpenComputers" then
-    local type = component.type(address) -- address is the address
-    if string.find(type, "apiculture") and type:sub(21,21) == "0" then
+    local type = component.type(address) -- address is the address for OpenComputers
+    -- if string.find(type, "apiculture") and type:sub(21,21) == "0" then
+    if string.find(type, "bee_housing") then
       local apiary = Apiary(component.proxy(address))
-      timerID[address] = event.timer(delay, function() checkApiary(apiary) end, math.huge)
-      print(size(timerID).." apiaries connected.")
+      apiaryID[address] = event.timer(delay, function() checkApiary(apiary) end, math.huge)
+      print(size(apiaryID).." apiaries connected.")
       return true
     end
   end
@@ -222,7 +228,7 @@ while true do
     if keyboard.isKeyDown(keyboard.keys.w) and keyboard.isControlDown() then
       event.ignore("component_available",deviceConnect)
       event.ignore("component_removed",deviceDisconnect)
-      for address, _ in pairs(timerID) do
+      for address, _ in pairs(apiaryID) do
         removeDevice(address)
       end
       break
@@ -231,7 +237,7 @@ while true do
       term.clear()
       print("AutoBee running.")
       print("Hold Ctrl+W to stop. Hold Ctrl+L to clear terminal.")
-      print(size(timerID).." apiaries connected.")
+      print(size(apiaryID).." apiaries connected.")
     end
     os.sleep(delay)
   end
@@ -239,9 +245,9 @@ while true do
   if version == "ComputerCraft" then
     event, data = os.pullEvent()
     if event == "timer" then
-      checkApiary(timerID[data])
-      timerID[os.startTimer(delay)] = timerID[data]
-      timerID[data] = nil
+      checkApiary(apiaryID[data])
+      apiaryID[os.startTimer(delay)] = apiaryID[data]
+      apiaryID[data] = nil
     elseif event == "peripheral" then
       addDevice(data)
     elseif event == "peripheral_detach" then
@@ -251,10 +257,10 @@ while true do
       term.setCursorPos(1,1)
       print("AutoBee running.")
       print("Press W to terminate program. Press L to clear terminal.")
-      print(size(timerID).." apiaries connected.")
+      print(size(apiaryID).." apiaries connected.")
     elseif event == "key_up" and data == keys.w then
       print()
-      if timer > 0 then
+      if timer ~= nil and timer > 0 then
         os.cancelTimer(timer)
       end
       break
