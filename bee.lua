@@ -131,14 +131,18 @@ function Apiary(device)
   -- Interface for item pushing, follows the OpenPeripherals/Plethora format directly
   function self.push(destinationEntity, fromSlot, amount, destinationSlot)
     if peripheralVersion == "Plethora" then
-      return device.pushItems(destinationEntity, fromSlot, amount, destinationSlot)
+      if pcall(function() device.pushItems(destinationEntity, 0, 1, 0) end) then
+        return device.pushItems(destinationEntity, fromSlot, amount, destinationSlot)
+      end
     end 
   end
 
   -- Interface for item pulling,  follows the OpenPeripherals/Plethora format directly
   function self.pull(sourceEntity, fromSlot, amount, destinationSlot)
     if peripheralVersion == "Plethora" then
-      return device.pullItems(sourceEntity, fromSlot, amount, destinationSlot)
+      if pcall(function() device.pullItems(sourceEntity, 0, 1, 0) end) then
+        return device.pullItems(sourceEntity, fromSlot, amount, destinationSlot)
+      end
     end 
   end
 
