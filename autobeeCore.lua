@@ -197,43 +197,6 @@ function Apiary(device, address)
     end
   end
 
-  function self.populatePrincessSlot()
-    if self.isPrincessSlotOccupied() == false then
-      self.pullPrincess()
-      -- If we didn't get a princess from our chest check the output
-      if self.isPrincessSlotOccupied() == false then
-        for slot=3,9 do
-          -- We will only get princesses in the output, never a queen
-          if self.checkSlot(slot) ~= nil and self.isPrincessOrQueen(slot) then
-            self.pushPrincess(slot)
-            self.pullPrincess()
-          end
-        end
-      end
-    end
-  end
-
-  function self.populateDroneSlot()
-    if self.isDroneSlotOccupied() == false then
-      self.pullDrone()
-      -- If we didn't get a drone from our chest check the output
-      if self.isDroneSlotOccupied() == false then
-        for slot=3,9 do
-          if self.checkSlot(slot) ~= nil and self.isDrone(slot) then
-            self.pushDrone(slot)
-            self.pullDrone()
-          end
-        end
-      end
-    else -- drone is occupied
-      for slot=3,9 do
-        if self.checkSlot(slot) ~= nil and self.isDrone(slot) then
-          self.pushDrone(slot)
-        end
-      end
-    end
-  end
-
   return self
 end
 
