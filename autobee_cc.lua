@@ -120,6 +120,11 @@ function humanInteraction()
   elseif data == keys.a then
     print("Rebuilding apiary map.")
     removeDevices()
+  elseif data == keys.m then
+    print("Printing apiary map:")
+    for timerID, apiary in pairs(apiaryTimerIDs) do
+      print(timerID..": "..apiary.getID())
+    end
   end
 end
 
