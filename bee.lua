@@ -20,11 +20,30 @@ keepDrones = "true"
 
 running = true
 
+function dependencyCheck(device)
+  if device.suck ~= nil then
+    peripheralVersion = "Plethora"
+  end
+  if device.suck == nil then
+    print("AutoBee Error: This game server lacks the Forge mod: Plethora Peripherals.  It is required to run this program.")
+    print("It can be found at: https://squiddev-cc.github.io/plethora/")
+    if version == "OpenComputers" then
+      os.exit()
+    elseif version == "ComputerCraft" then
+      running = false
+      return false
+    end
+  end
+  return true
+end
+
 if os.version ~= nil then -- This is a ComputerCraft OS API method
   if os.version() == "CraftOS 1.8" then -- This is ComputerCraft for 1.9/1.10
     version = "ComputerCraft"
-    print("AutoBee running.")
-    print("Press W to terminate program. Press L to clear terminal.")
+    if dependencyCheck(peripheral.find("forestry_apiary")) then
+      print("AutoBee running.")
+      print("Press W to terminate program. Press L to clear terminal.")
+    end
   end
 else
   -- Temporary print to show that OC isn't yet supported
@@ -47,28 +66,11 @@ end
 local apiaryTimerIDs = {}
 local monitors = {}
 
-function dependencyCheck(device)
-  if device.suck ~= nil then
-    peripheralVersion = "Plethora"
-  end
-  if device.suck == nil then
-    print("AutoBee Error: This game server lacks the Forge mod: Plethora Peripherals.  It is required to run this program.")
-    print("It can be found at: https://squiddev-cc.github.io/plethora/")
-    if version == "OpenComputers" then
-      os.exit()
-    elseif version == "ComputerCraft" then
-      shell.exit()
-    end
-  end
-end
-
 --------------------------------------------------------------------------------
 -- Apiary class
 
 function Apiary(device, address)
   local self = {}
-
-  dependencyCheck(device)
 
   function self.getID()
     return address
@@ -263,11 +265,15 @@ function deviceDisconnect(event, address)
 end
 
 function removeDevice(device)
-  if version == "OpenComputers" then
-    event.cancel(apiaryTimerIDs[device])
+  for timerID, address in pairs(apiaryTimerIDs) do
+    if version == "OpenComputers" then
+      event.canel(address)
+    elseif version == "ComputerCraft" then
+      os.cancelTimer(timerID)
+    end
   end
-  apiaryTimerIDs[device] = nil
-  print(size(apiaryTimerIDs).." apiaries connected.")
+  apiaryTimerIDs = {}
+  initDevices()
 end
 
 function addDevice(address)
@@ -291,21 +297,23 @@ function addDevice(address)
   return false
 end
 
-if version == "ComputerCraft" then
-  local devices = peripheral.getNames()
-  for _, device in ipairs(devices) do
-    addDevice(device)
+function initDevices()
+  if version == "ComputerCraft" then
+    local devices = peripheral.getNames()
+    for _, device in ipairs(devices) do
+      addDevice(device)
+    end
+  elseif version == "OpenComputers" then
+    --Aux ignore in case the program crashed and listeners are still active
+    event.ignore("component_available",deviceConnect)
+    event.ignore("component_removed",deviceDisconnect)
+    local devices = component.list()
+    for address, device in pairs(devices) do
+      addDevice(address)
+    end
+    event.listen("component_added",deviceConnect)
+    event.listen("component_removed",deviceDisconnect)
   end
-elseif version == "OpenComputers" then
-  --Aux ignore in case the program crashed and listeners are still active
-  event.ignore("component_available",deviceConnect)
-  event.ignore("component_removed",deviceDisconnect)
-  local devices = component.list()
-  for address, device in pairs(devices) do
-    addDevice(address)
-  end
-  event.listen("component_added",deviceConnect)
-  event.listen("component_removed",deviceDisconnect)
 end
 
 -- ComputerCraft Functions
@@ -347,6 +355,8 @@ end
 ----------------------
 -- The main loop
 ----------------------
+
+if running == true then initDevices() end -- inits devices upon first run
 
 while running do
   if version == "OpenComputers" then
