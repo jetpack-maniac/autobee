@@ -119,7 +119,7 @@ function Apiary(device, address)
     end
   end
 
-    function self.itemType(slot)
+  function self.itemType(slot)
     if self.checkSlot(slot) ~= nil then
       local name = self.checkSlot(slot).name
       if matchAny(name, queen) then return "queen" end
@@ -186,24 +186,22 @@ function Apiary(device, address)
 
   function self.checkOutput()
     for slot=3,9 do
-      -- Is what we are looking at a princess?
-      if self.isPrincessOrQueen(slot) then
+      local type = self.itemType(slot)
+      if type == "princess" then
         if self.isPrincessSlotOccupied() == true then
           self.push(chestDir, slot)
         else
           self.movePrincess(slot)
         end
-      end
-      -- Is what we are looking at a drone?
-      if self.isDrone(slot) then
+      elseif type == "drone" then
         if self.isDroneSlotOccupied() == true then
           self.push(chestDir, slot)
         else
           self.moveDrone(slot)
         end
+      else
+        self.push(chestDir, slot)
       end
-      -- If it's not either of those it's a product, push it
-      self.push(chestDir, slot)      
     end
   end
 
