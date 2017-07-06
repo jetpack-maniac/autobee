@@ -320,19 +320,16 @@ end
 
 function handlePeripheralAttach()
   _, data = os.pullEvent("peripheral")
-  print("Attach")
   addDevice(data) 
 end
 
 function handlePeripheralDetach()
   _, data = os.pullEvent("peripheral_detach")
-  print("Detach")
   removeDevice(data) 
 end
 
 function humanInteraction()
   _, data = os.pullEvent("key_up")
-  print("Human interaction")
   if data == keys.l then
     term.clear()
     term.setCursorPos(1,1)
