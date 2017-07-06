@@ -175,20 +175,6 @@ function Apiary(device, address)
 
   -- End of Interfaces
 
-  function self.emptyOutput()
-    for slot=3,9 do
-      if self.checkSlot(slot) ~= nil then
-        if self.isPrincessOrQueen(slot) then
-          self.pushPrincess(slot)
-        elseif self.isDrone(slot) then
-          self.pushDrone(slot)
-        else
-          self.push(chestDir,slot)
-        end
-      end
-    end
-  end
-
   function self.checkOutput()
     os.sleep(.01)
     for slot=3,9 do
