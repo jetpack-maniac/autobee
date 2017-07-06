@@ -27,6 +27,15 @@ function size(input)
   return count
 end
 
+function matchAny(criterion, sample)
+  for i=1, #sample do
+    if criterion == sample[i] then
+      return true
+    end
+  end
+  return false
+end
+
 -- Dependency Check for required item APIs
 function dependencyCheck(device)
   if device == nil then return nil end
@@ -50,6 +59,10 @@ end
 
 function Apiary(device, address)
   local self = {}
+
+  local queen = {"beeQueenGE", "forestry:beeQueenGE"}
+  local princess = {"beePrincessGE", "forestry:beePrincessGE"}
+  local drone = {"beeDroneGE", "forestry:beeDroneGE"}
 
   function self.getID()
     return address
@@ -100,7 +113,19 @@ function Apiary(device, address)
   function self.isPrincessOrQueen(slot)
     if self.checkSlot(slot) ~= nil then
       local name = self.checkSlot(slot).name
-      return name == "beePrincessGE" or name == "beeQueenGE" or name == "forestry:beePrincessGE" or name == "forestry:beeQueenGE"
+      if matchAny(name, queen) then return "queen" end
+      if matchAny(name, princess) then return "princess" end
+    else
+      return false
+    end
+  end
+
+    function self.itemType(slot)
+    if self.checkSlot(slot) ~= nil then
+      local name = self.checkSlot(slot).name
+      if matchAny(name, queen) then return "queen" end
+      if matchAny(name, princess) then return "princess" end
+      if matchAny(name, drone) then return "drone" end
     else
       return false
     end
