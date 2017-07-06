@@ -18,6 +18,7 @@ keepDrones = "true"
 
 --- End of Configuration
 
+running = true
 
 if os.version ~= nil then -- This is a ComputerCraft OS API method
   if os.version() == "CraftOS 1.8" then -- This is ComputerCraft for 1.9/1.10
@@ -310,11 +311,51 @@ elseif version == "OpenComputers" then
   event.listen("component_removed",deviceDisconnect)
 end
 
+-- ComputerCraft Functions
+
+function handleTimer()
+  _, data = os.pullEvent("timer")
+  print("Timer")
+  checkApiary(apiaryID[data])
+  apiaryID[os.startTimer(delay)] = apiaryID[data]
+  apiaryID[data] = nil
+end
+
+function handlePeripheralAttach()
+  _, data = os.pullEvent("peripheral")
+  print("Attach")
+  addDevice(data)
+     
+end
+
+function handlePeripheralDetach()
+  _, data = os.pullEvent("peripheral_detach")
+  print("Detach")
+  removeDevice(data) 
+end
+
+function humanInteraction()
+  _, data = os.pullEvent("key_up")
+  print("Human interaction")
+  if data == keys.l then
+    term.clear()
+    term.setCursorPos(1,1)
+    print("AutoBee running.")
+    print("Press W to terminate program. Press L to clear terminal.")
+    print(size(apiaryID).." apiaries connected.")
+  elseif data == keys.w then
+    for timerID, _ in pairs(apiaryID) do
+      os.cancelTimer(timerID)
+    end
+    running = false
+  end
+end
+
 ----------------------
 -- The main loop
 ----------------------
 
-while true do
+while running do
   if version == "OpenComputers" then
     if keyboard.isKeyDown(keyboard.keys.w) and keyboard.isControlDown() then
       event.ignore("component_available",deviceConnect)
@@ -333,28 +374,10 @@ while true do
     os.sleep(delay)
   end
 
+
+
   if version == "ComputerCraft" then
-    event, data = os.pullEvent()
-    if event == "timer" then
-      checkApiary(apiaryID[data])
-      apiaryID[os.startTimer(delay)] = apiaryID[data]
-      apiaryID[data] = nil
-    elseif event == "peripheral" then
-      addDevice(data)
-    elseif event == "peripheral_detach" then
-      removeDevice(data)
-    elseif event == "key_up" and data == keys.l then
-      term.clear()
-      term.setCursorPos(1,1)
-      print("AutoBee running.")
-      print("Press W to terminate program. Press L to clear terminal.")
-      print(size(apiaryID).." apiaries connected.")
-    elseif event == "key_up" and data == keys.w then
-      if timer ~= nil and timer > 0 then
-        os.cancelTimer(timer)
-      end
-      break
-    end
+    parallel.waitForAny(handleTimer, handlePeripheralAttach, handlePeripheralDetach, humanInteraction)
   end
 end
 
