@@ -1,5 +1,12 @@
 ---- AutoBee for ComputerCraft ----
 
+-- debug
+
+local printTimers = true
+local outputDebug = false
+
+-- end debug
+
 local running = true
 dofile("autobeeCore.lua")
 
@@ -22,7 +29,7 @@ end
 
 local apiaryTimerIDs = {}
 
-function removeDevice(device)
+function removeDevices()
   for timerID, address in pairs(apiaryTimerIDs) do
     os.cancelTimer(timerID)
   end
@@ -49,11 +56,25 @@ end
 
 -- ComputerCraft Functions
 
+function createTimer(device)
+  if device == nil then return false end
+  apiaryTimerIDs[os.startTimer(delay)] = apiaryTimerIDs[device]
+  apiaryTimerIDs[device] = nil
+end
+
 function handleTimer()
   _, data = os.pullEvent("timer")
-  apiaryTimerIDs[data].checkOutput()
-  apiaryTimerIDs[os.startTimer(delay)] = apiaryTimerIDs[data]
-  apiaryTimerIDs[data] = nil
+  if printTimers == true then 
+    print("Timer: "..apiaryTimerIDs[data].getID())
+  end
+  if outputDebug == true then 
+    if pcall(function() apiaryTimerIDs[data].checkOutput() end) then
+      createTimer(data)
+    else
+      print("Pcall failed on "..apiaryTimerIDs[data].getID())
+      createTimer(data)
+    end
+  end
 end
 
 function handlePeripheralAttach()
@@ -73,13 +94,32 @@ function humanInteraction()
     term.setCursorPos(1,1)
     print("AutoBee running.")
     print("Press W to stop program. Press L to clear terminal.")
-    print(size(apiaryTimerIDs).." apiaryTimerIDs connected.")
+    print(size(apiaryTimerIDs).." apiaries connected.")
   elseif data == keys.w then
     print("AutoBee: Interrupt detected. Closing program.")
     for timerID, _ in pairs(apiaryTimerIDs) do
       os.cancelTimer(timerID)
     end
     running = false
+  elseif data == keys.t then
+    if printTimers == false then
+      print("Timers printing.")
+      printTimers = true
+    else
+      print("Stopping timers print.")
+      printTimers = false
+    end
+  elseif data == keys.o then
+    if outputDebug == false then
+      print("Output on.")
+      outputDebug = true
+    else
+      print("Output off.")
+      outputDebug = false
+    end
+  elseif data == keys.a then
+    print("Rebuilding apiary map.")
+    removeDevices()
   end
 end
 
