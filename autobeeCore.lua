@@ -142,7 +142,12 @@ function Apiary(device, address)
 
   function self.checkSlot(slot)
     if peripheralVersion == "Plethora" then
-      return device.getItemMeta(slot)
+      local itemMeta = nil
+      if pcall(function() itemMeta = device.getItemMeta(slot) end) then
+        return itemMeta
+      else
+        print("Pcall failed on check slot")
+      end
     end
   end
 
@@ -185,6 +190,7 @@ function Apiary(device, address)
   end
 
   function self.checkOutput()
+    os.sleep(.01)
     for slot=3,9 do
       local type = self.itemType(slot)
       if type == "princess" then

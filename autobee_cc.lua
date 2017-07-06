@@ -68,7 +68,7 @@ function handleTimer()
     print("Timer: "..apiaryTimerIDs[data].getID())
   end
   if outputDebug == true then
-    if pcall(function() apiaryTimerIDs[data].emptyOutput() end) == false then
+    if pcall(function() apiaryTimerIDs[data].checkOutput() end) == false then
       print("Pcall failed checkOutput on "..apiaryTimerIDs[data].getID())
     end
   end
