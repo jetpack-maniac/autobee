@@ -44,7 +44,7 @@ end
 
 
 
-local apiaryID = {}
+local apiaryTimerIDs = {}
 local monitors = {}
 
 function dependencyCheck(device)
@@ -264,26 +264,26 @@ end
 
 function removeDevice(device)
   if version == "OpenComputers" then
-    event.cancel(apiaryID[device])
+    event.cancel(apiaryTimerIDs[device])
   end
-  apiaryID[device] = nil
-  print(size(apiaryID).." apiaries connected.")
+  apiaryTimerIDs[device] = nil
+  print(size(apiaryTimerIDs).." apiaries connected.")
 end
 
 function addDevice(address)
   if address == nil then return false end
   if version == "ComputerCraft" then -- address is the 'side' for ComputerCraft
     if string.find(peripheral.getType(address), "forestry_apiary") then
-      apiaryID[os.startTimer(delay)] = Apiary(peripheral.wrap(address), address)
-      print(size(apiaryID).." apiaries connected.")
+      apiaryTimerIDs[os.startTimer(delay)] = Apiary(peripheral.wrap(address), address)
+      print(size(apiaryTimerIDs).." apiaries connected.")
       return true
     end
   elseif version == "OpenComputers" then
     local type = component.type(address) -- address is the address for OpenComputers
     if string.find(type, "bee_housing") then
       local apiary = Apiary(component.proxy(address), address)
-      apiaryID[address] = event.timer(delay, function() apiary.checkOutput() end, math.huge)
-      print(size(apiaryID).." apiaries connected.")
+      apiaryTimerIDs[address] = event.timer(delay, function() apiary.checkOutput() end, math.huge)
+      print(size(apiaryTimerIDs).." apiaries connected.")
       return true
     end
   end
@@ -312,10 +312,10 @@ end
 
 function handleTimer()
   _, data = os.pullEvent("timer")
-  print("Timer: "..apiaryID[data].getID())
-  apiaryID[data].checkOutput()
-  apiaryID[os.startTimer(delay)] = apiaryID[data]
-  apiaryID[data] = nil
+  print("Timer: "..apiaryTimerIDs[data].getID())
+  apiaryTimerIDs[data].checkOutput()
+  apiaryTimerIDs[os.startTimer(delay)] = apiaryTimerIDs[data]
+  apiaryTimerIDs[data] = nil
 end
 
 function handlePeripheralAttach()
@@ -338,9 +338,9 @@ function humanInteraction()
     term.setCursorPos(1,1)
     print("AutoBee running.")
     print("Press W to terminate program. Press L to clear terminal.")
-    print(size(apiaryID).." apiaries connected.")
+    print(size(apiaryTimerIDs).." apiaries connected.")
   elseif data == keys.w then
-    for timerID, _ in pairs(apiaryID) do
+    for timerID, _ in pairs(apiaryTimerIDs) do
       os.cancelTimer(timerID)
     end
     running = false
@@ -356,7 +356,7 @@ while running do
     if keyboard.isKeyDown(keyboard.keys.w) and keyboard.isControlDown() then
       event.ignore("component_available",deviceConnect)
       event.ignore("component_removed",deviceDisconnect)
-      for address, _ in pairs(apiaryID) do
+      for address, _ in pairs(apiaryTimerIDs) do
         removeDevice(address)
       end
       break
@@ -365,7 +365,7 @@ while running do
       term.clear()
       print("AutoBee running.")
       print("Hold Ctrl+W to stop. Hold Ctrl+L to clear terminal.")
-      print(size(apiaryID).." apiaries connected.")
+      print(size(apiaryTimerIDs).." apiaries connected.")
     end
     os.sleep(delay)
   end
