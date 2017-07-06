@@ -3,7 +3,7 @@
 -- debug
 
 local printTimers = true
-local outputDebug = false
+local outputDebug = true
 
 -- end debug
 
@@ -56,39 +56,37 @@ end
 
 -- ComputerCraft Functions
 
-function createTimer(device)
-  if device == nil then return false end
-  apiaryTimerIDs[os.startTimer(delay)] = apiaryTimerIDs[device]
-  apiaryTimerIDs[device] = nil
+function deleteTimer(timerID)
+  apiaryTimerIDs[timerID] = nil
+  -- print("Deleted Timer ID: "..timerID)
 end
 
 function handleTimer()
-  _, data = os.pullEvent("timer")
+  local _, data = os.pullEvent("timer")
+  apiaryTimerIDs[os.startTimer(delay)] = apiaryTimerIDs[data]
   if printTimers == true then 
     print("Timer: "..apiaryTimerIDs[data].getID())
   end
-  if outputDebug == true then 
-    if pcall(function() apiaryTimerIDs[data].checkOutput() end) then
-      createTimer(data)
-    else
-      print("Pcall failed on "..apiaryTimerIDs[data].getID())
-      createTimer(data)
+  if outputDebug == true then
+    if pcall(function() apiaryTimerIDs[data].emptyOutput() end) == false then
+      print("Pcall failed checkOutput on "..apiaryTimerIDs[data].getID())
     end
   end
+  deleteTimer(data)
 end
 
 function handlePeripheralAttach()
-  _, data = os.pullEvent("peripheral")
+  local _, data = os.pullEvent("peripheral")
   addDevice(data) 
 end
 
 function handlePeripheralDetach()
-  _, data = os.pullEvent("peripheral_detach")
-  removeDevice(data) 
+  local _, data = os.pullEvent("peripheral_detach")
+  removeDevices()
 end
 
 function humanInteraction()
-  _, data = os.pullEvent("key_up")
+  local _, data = os.pullEvent("key_up")
   if data == keys.l then
     term.clear()
     term.setCursorPos(1,1)
