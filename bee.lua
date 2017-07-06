@@ -65,10 +65,14 @@ end
 --------------------------------------------------------------------------------
 -- Apiary class
 
-function Apiary(device)
+function Apiary(device, address)
   local self = {}
 
   dependencyCheck(device)
+
+  function self.getID()
+    return address
+  end
 
   -- Checks to see if the princess/queen slot (1) is empty or full and modifies
   -- queen and princess accordingly
@@ -241,13 +245,6 @@ end
 --------------------------------------------------------------------------------
 -- Misc Functions
 
-function checkApiary(apiary)
-  -- apiary.populatePrincessSlot()
-  -- apiary.populateDroneSlot()
-  -- apiary.emptyOutput()
-  apiary.checkOutput()
-end
-
 function size(input)
   local count = 0
   for _, _ in pairs(input) do
@@ -277,15 +274,15 @@ function addDevice(address)
   if address == nil then return false end
   if version == "ComputerCraft" then -- address is the 'side' for ComputerCraft
     if string.find(peripheral.getType(address), "forestry_apiary") then
-      apiaryID[os.startTimer(delay)] = Apiary(peripheral.wrap(address))
+      apiaryID[os.startTimer(delay)] = Apiary(peripheral.wrap(address), address)
       print(size(apiaryID).." apiaries connected.")
       return true
     end
   elseif version == "OpenComputers" then
     local type = component.type(address) -- address is the address for OpenComputers
     if string.find(type, "bee_housing") then
-      local apiary = Apiary(component.proxy(address))
-      apiaryID[address] = event.timer(delay, function() checkApiary(apiary) end, math.huge)
+      local apiary = Apiary(component.proxy(address), address)
+      apiaryID[address] = event.timer(delay, function() apiary.checkOutput() end, math.huge)
       print(size(apiaryID).." apiaries connected.")
       return true
     end
@@ -315,8 +312,8 @@ end
 
 function handleTimer()
   _, data = os.pullEvent("timer")
-  print("Timer")
-  checkApiary(apiaryID[data])
+  print("Timer: "..apiaryID[data].getID())
+  apiaryID[data].checkOutput()
   apiaryID[os.startTimer(delay)] = apiaryID[data]
   apiaryID[data] = nil
 end
@@ -324,8 +321,7 @@ end
 function handlePeripheralAttach()
   _, data = os.pullEvent("peripheral")
   print("Attach")
-  addDevice(data)
-     
+  addDevice(data) 
 end
 
 function handlePeripheralDetach()
