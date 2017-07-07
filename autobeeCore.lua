@@ -185,7 +185,7 @@ function Apiary(device, address)
         else
           self.movePrincess(slot)
         end
-      elseif type == "drone" then
+      elseif type == "drone" thenSize
         if self.isDroneSlotOccupied() == true then
           self.push(chestDir, slot)
         else

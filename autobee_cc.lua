@@ -24,6 +24,8 @@ if os.version ~= nil then -- This is a ComputerCraft OS API method
       print("AutoBee Error: No apiaryTimerIDs found.")
       running = false
     end
+  else
+    error("AutoBee Error: This version is for ComputerCraft.  See https://github.com/jetpack-maniac/autobee for more details.")
   end
 end
 

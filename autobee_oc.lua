@@ -1,5 +1,6 @@
 ---- AutoBee for OpenComputers ----
 
+local running = true
 dofile("autobeeCore.lua")
 
 -- Version Check
@@ -11,7 +12,8 @@ if pcall(function() component = require("component") end) == true then
     term = require("term")
     print("AutoBee running.")
     print("Hold Ctrl+W to stop. Hold Ctrl+L to clear terminal.")
-  end
+  else
+    error("AutoBee Error: This version is for OpenComputers.  See https://github.com/jetpack-maniac/autobee for more details.")
 end
 
 local apiaryTimerIDs = {}
@@ -27,11 +29,7 @@ end
 
 function removeDevice(device)
   for timerID, address in pairs(apiaryTimerIDs) do
-    if version == "OpenComputers" then
-      event.canel(address)
-    elseif version == "ComputerCraft" then
-      os.cancelTimer(timerID)
-    end
+    event.canel(address)
   end
   apiaryTimerIDs = {}
   initDevices()
