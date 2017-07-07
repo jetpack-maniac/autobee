@@ -3,6 +3,21 @@
 local running = true
 dofile("autobeeCore.lua")
 
+-- Peripheral check
+function peripheralCheck()
+  local apiary = nil
+  for address, componentType in pairs(component.list()) do
+    -- this is the search for 1.7.10 Forestry apiaries
+    if string.find(componentType, "apiculture") and componentType:sub(21,21) == "0" then
+      apiary = address
+    -- elseif 
+    -- this is the search for 1.10.2 Forestry apiaries
+
+    end
+  end
+  dependencyCheck(component.proxy(apiary))
+end
+
 -- Version Check
 if pcall(function() component = require("component") end) == true then
   if component.proxy ~= nil then
@@ -10,6 +25,7 @@ if pcall(function() component = require("component") end) == true then
     keyboard = require("keyboard")
     event = require("event")
     term = require("term")
+    peripheralCheck()
     print("AutoBee running.")
     print("Hold Ctrl+W to stop. Hold Ctrl+L to clear terminal.")
   else

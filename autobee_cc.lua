@@ -10,19 +10,38 @@ local outputDebug = true
 local running = true
 dofile("autobeeCore.lua")
 
+-- Peripheral check
+
+function peripheralCheck()
+  local apiary = nil
+  if peripheral.find("forestry_apiary") ~= nil then
+    -- this is the name of forestry apiaries on 1.10.2
+    apiary = peripheral.wrap(peripheral.find("forestry_apiary"))
+  else
+    local devices = peripheral.getNames()
+    for _, address in pairs(devices) do
+      if string.find(peripheral.getType(address), "apiculture") and peripheral.getType(address):sub(21,21) == "0" == true then
+        apiary = peripheral.wrap(address)
+        break
+      end
+    end
+  end
+  if apiary ~= nil then
+    if dependencyCheck(apiary) then
+      print("AutoBee running.")
+      print("Press W to terminate program. Press L to clear terminal.")
+    end
+  else
+    error("No apiaries detected.")
+  end
+end
+
 -- Version check
 if os.version ~= nil then -- This is a ComputerCraft OS API method
-  if os.version() == "CraftOS 1.8" then -- This is ComputerCraft for 1.9/1.10
+  -- if string.find(os.version(), "CraftOS") == true then
+  if os.version() == "CraftOS 1.7" then -- This is ComputerCraft for 1.9/1.10
     version = "ComputerCraft"
-    local apiary = peripheral.find("forestry_apiary")
-    if apiary ~= nil then 
-      if dependencyCheck(apiary) then
-        print("AutoBee running.")
-        print("Press W to terminate program. Press L to clear terminal.")
-      end
-    else
-      error("No apiaries connected.")
-    end
+    peripheralCheck()
   else
     error("This version is for ComputerCraft.  See https://github.com/jetpack-maniac/autobee for more details.")
   end

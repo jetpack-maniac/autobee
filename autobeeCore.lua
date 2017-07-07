@@ -43,7 +43,7 @@ function dependencyCheck(device)
   if device == nil then return nil end
   if device.getTransferLocations ~= nil then
     peripheralVersion = "Plethora"
-  elseif device.getStackInSlot ~= nil then
+  elseif device.canBreed ~= nil then
     peripheralVersion = "OpenPeripherals"
   end
   if peripheralVersion == nil then
@@ -132,19 +132,33 @@ function Apiary(device, address)
       return true
     else
       return false
+    end  local apiary = peripheral.find("forestry_apiary")
+  if apiary ~= nil then 
+    if dependencyCheck(apiary) then
+      print("AutoBee running.")
+      print("Press W to terminate program. Press L to clear terminal.")
     end
+  else
+    error("No apiaries detected.")
+  end
   end
 
   -- Interfaces
 
   function self.checkSlot(slot)
+    local itemMeta = nil
     if peripheralVersion == "Plethora" then
-      local itemMeta = nil
       if pcall(function() itemMeta = device.getItemMeta(slot) end) then
         return itemMeta
       else
-        print("AutoBee Error: PCall failed on check slot")
+        print("AutoBee Error: PCall failed on plethora check slot")
       end
+    elseif peripheralVersion == "OpenPeripherals" then
+      if pcall(function() itemMeta = device.getStackInSlot(slot) end) then
+        return itemMeta
+      else
+        print("AutoBee Error: PCall failed on openp check slot")
+      end    
     end
   end
 
@@ -154,7 +168,13 @@ function Apiary(device, address)
       if pcall(function() device.pushItems(destinationEntity, fromSlot, amount, destinationSlot) end) then
         return true
       else
-        print("AutoBee Error: PCall failed on push")
+        print("AutoBee Error: PCall failed on plethora push")
+      end
+    elseif peripheralVersion == "OpenPeripherals" then
+      if pcall(function() device.pushItemIntoSlot(destinationEntity, fromSlot, amount, destinationSlot) end) then
+        return true
+      else
+        print("AutoBee Error: PCall failed on openp push")
       end
     end
   end
@@ -165,7 +185,13 @@ function Apiary(device, address)
       if pcall(function() device.pullItems(sourceEntity, fromSlot, amount, destinationSlot) end) then
         return true
       else
-        print("AutoBee Error: PCall failed on pull")
+        print("AutoBee Error: PCall failed on plethora pull")
+      end
+    elseif peripheralVersion == "Plethora" then
+      if pcall(function() device.pullItemIntoSlot(sourceEntity, fromSlot, amount, destinationSlot) end) then
+        return true
+      else
+        print("AutoBee Error: PCall failed on openp pull")
       end
     end 
   end
