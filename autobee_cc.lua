@@ -69,7 +69,6 @@ function removeDevices()
     os.cancelTimer(timerID)
   end
   apiaryTimerIDs = {}
-  initDevices()
 end
 
 function addDevice(address)
@@ -116,6 +115,7 @@ end
 function handlePeripheralDetach()
   local _, data = os.pullEvent("peripheral_detach")
   removeDevices()
+  initDevices()
 end
 
 function humanInteraction()
