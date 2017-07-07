@@ -1,6 +1,6 @@
 --- Configuration
 
--- These config options tell the apiaries to drop the excess drones and/or products into the world
+-- These config options tell the apiaries to drop items into the world
 -- WARNING: unless you're using some kind of system to pick them up,
 -- this will cause lag due to floating items piling up in the world
 dropProducts = "false"
@@ -19,6 +19,7 @@ delay = 2
 --------------------------------------------------------------------------------
 -- Misc Functions
 
+-- returns the size of a data structure
 function size(input)
   local count = 0
   for _, _ in pairs(input) do
@@ -27,6 +28,7 @@ function size(input)
   return count
 end
 
+-- searches a sample table and returns true if any element matches the criterion
 function matchAny(criterion, sample)
   for i=1, #sample do
     if criterion == sample[i] then
@@ -68,14 +70,12 @@ function Apiary(device, address)
     return address
   end
 
-  -- Checks to see if the princess/queen slot (1) is empty or full and modifies
-  -- queen and princess accordingly
+  -- Checks to see if the princess/queen slot (1) is empty or full
   function self.isPrincessSlotOccupied()
     return self.checkSlot(1) ~= nil
   end
 
-  -- Checks to see if the drone slot (2) is empty or full and modifies
-  -- drone accordingly
+  -- Checks to see if the drone slot (2) is empty or full
   function self.isDroneSlotOccupied()
      return self.checkSlot(2) ~= nil
   end
@@ -146,7 +146,7 @@ function Apiary(device, address)
       if pcall(function() itemMeta = device.getItemMeta(slot) end) then
         return itemMeta
       else
-        print("Pcall failed on check slot")
+        print("AutoBee Error: PCall failed on check slot")
       end
     end
   end
@@ -157,7 +157,7 @@ function Apiary(device, address)
       if pcall(function() device.pushItems(destinationEntity, fromSlot, amount, destinationSlot) end) then
         return true
       else
-        print("PCall failed push")
+        print("AutoBee Error: PCall failed on push")
       end
     end
   end
@@ -168,7 +168,7 @@ function Apiary(device, address)
       if pcall(function() device.pullItems(sourceEntity, fromSlot, amount, destinationSlot) end) then
         return true
       else
-        print("PCall failed pull")
+        print("AutoBee Error: PCall failed on pull")
       end
     end 
   end
