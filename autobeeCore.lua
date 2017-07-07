@@ -146,15 +146,7 @@ function Apiary(device, address)
       return true
     else
       return false
-    end  local apiary = peripheral.find("forestry_apiary")
-  if apiary ~= nil then 
-    if dependencyCheck(apiary) then
-      print("AutoBee running.")
-      print("Press W to terminate program. Press L to clear terminal.")
     end
-  else
-    error("No apiaries detected.")
-  end
   end
 
   -- Interfaces
