@@ -8,9 +8,14 @@ local outputDebug = true
 -- end debug
 
 local running = true
+local running = true
 if pcall(function() dofile("autobeeCore.lua") end) == false then
   if pcall(function() dofile("autobee/autobeeCore.lua") end) == false then
-    error("Failed to load autobeeCore library.")
+    print("Core Autobee library not found.  Fetching via pastebin.com/Vvckgdst")
+    shell.run("pastebin get Vvckgdst autobeeCore.lua")
+    if pcall(function() dofile("autobeeCore.lua") end) == false then
+      error("Failed to fetch library.")
+    end
   end
 end
 
