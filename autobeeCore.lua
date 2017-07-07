@@ -221,7 +221,7 @@ function Apiary(device, address)
       if self.isPrincessSlotOccupied() == false then
         self.pullPrincess()
       end
-      if self.isDroneSlotOccupied() == false
+      if self.isDroneSlotOccupied() == false then
         self.pullDrone()
       end
     end
@@ -246,6 +246,11 @@ function Apiary(device, address)
         self.push(chestDir, slot)
       end
     end
+  end
+
+  function self.checkApiary()
+    self.checkOutput()
+    self.checkInput()
   end
 
   return self

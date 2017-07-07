@@ -81,7 +81,7 @@ function addDevice(address)
   if address == nil then return false end
   if isApiary(address) == true then
     local apiary = Apiary(component.proxy(address), address)
-    apiaryTimerIDs[address] = event.timer(delay, function() apiary.checkOutput() end, math.huge)
+    apiaryTimerIDs[address] = event.timer(delay, function() apiary.checkApiary() end, math.huge)
     print(size(apiaryTimerIDs).." apiaries connected.")
     return true
   end
