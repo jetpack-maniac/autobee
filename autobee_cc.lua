@@ -10,15 +10,15 @@ local outputDebug = true
 local running = true
 dofile("autobeeCore.lua")
 
--- looks at a device and determines if it's a valid apiary, returns address on true else return false
+-- looks at a device and determines if it's a valid apiary, returns true or false
 function isApiary(address)
   if address == nil then return false end
   -- 1.10.2 Apiary
   if string.find(peripheral.getType(address), "forestry_apiary") then
-    return address
+    return true
   -- 1.7.10 Apiary
   elseif string.find(peripheral.getType(address), "apiculture") and peripheral.getType(address):sub(21,21) == "0" == true then
-    return address
+    return true
   else
     return false
   end

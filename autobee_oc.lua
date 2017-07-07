@@ -18,15 +18,15 @@ function peripheralCheck()
   dependencyCheck(component.proxy(apiary))
 end
 
--- looks at a device and determines if it's a valid apiary, returns address on true else return false
+-- looks at a device and determines if it's a valid apiary, returns true or false
 function isApiary(address)
   if address == nil then return false end
   -- 1.10.2 Apiaries
   if string.find(address, "bee_housing") then -- TODO discriminate apiaries versus bee houses
-    return address
+    return true
   -- 1.7.10 Apiaries
   elseif string.find(address, "apiculture") and address:sub(21,21) == "0" then
-    return address
+    return true
   else
   return false
   end
