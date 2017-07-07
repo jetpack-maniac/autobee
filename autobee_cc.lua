@@ -47,7 +47,7 @@ function peripheralCheck()
       print("Press W to terminate program. Press L to clear terminal.")
     end
   else
-    error("No apiaries detected.")
+    print("AutoBee Warning: No apiaries detected.")
   end
 end
 
