@@ -99,12 +99,26 @@ function Apiary(device, address)
 
   -- Moves drone from output into input
   function self.moveDrone(slot)
-    self.push("self", slot, 64, 2)
+    if peripheralVersion == "Plethora" then
+      self.push("self", slot, 64, 2)
+      return true
+    elseif peripheralVersion == "OpenPeripherals" then
+      self.pushDrone(slot)
+      self.pullDrone()
+    end
+    return false
   end
 
   -- Moves princess from output into input
   function self.movePrincess(slot)
-    self.push("self", slot, 1, 1)
+    if peripheralVersion == "Plethora" then
+      self.push("self", slot, 1, 1)
+      return true
+    elseif peripheralVersion == "OpenPeripherals" then
+      self.pushPrincess(slot)
+      self.pullPrincess()
+      return true
+    end
   end
 
   function self.isPrincessOrQueen(slot)
@@ -171,6 +185,10 @@ function Apiary(device, address)
         print("AutoBee Error: PCall failed on plethora push")
       end
     elseif peripheralVersion == "OpenPeripherals" then
+      -- print(destinationEntity)
+      -- print(fromSlot)
+      -- print(amount)
+      -- print(destinationSlot)
       if pcall(function() device.pushItemIntoSlot(destinationEntity, fromSlot, amount, destinationSlot) end) then
         return true
       else
@@ -198,8 +216,18 @@ function Apiary(device, address)
 
   -- End of Interfaces
 
+  function self.checkInput()
+    for slot=1,2 do
+      if self.isPrincessSlotOccupied() == false then
+        self.pullPrincess()
+      end
+      if self.isDroneSlotOccupied() == false
+        self.pullDrone()
+      end
+    end
+  end
+
   function self.checkOutput()
-    os.sleep(.01)
     for slot=3,9 do
       local type = self.itemType(slot)
       if type == "princess" then
