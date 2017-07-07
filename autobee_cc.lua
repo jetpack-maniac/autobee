@@ -10,22 +10,34 @@ local outputDebug = true
 local running = true
 dofile("autobeeCore.lua")
 
+-- looks at a device and determines if it's a valid apiary, returns address on true else return false
+function isApiary(address)
+  -- 1.10.2 Apiary
+  if string.find(peripheral.getType(address), "forestry_apiary") then
+    return address
+  -- 1.7.10 Apiary
+  elseif string.find(peripheral.getType(address), "apiculture") and peripheral.getType(address):sub(21,21) == "0" == true then
+    return address
+  else
+    return false
+  end
+end
+
+-- examines peripherals and returns a valid apiary or nil
+function findApiary()
+  local devices = peripheral.getNames()
+  for _, address in pairs(devices) do
+    if isApiary(address) ~= nil then
+      return peripheral.wrap(address)
+    end
+  end
+  return nil
+end
+
 -- Peripheral check
 
 function peripheralCheck()
-  local apiary = nil
-  if peripheral.find("forestry_apiary") ~= nil then
-    -- this is the name of forestry apiaries on 1.10.2
-    apiary = peripheral.wrap(peripheral.find("forestry_apiary"))
-  else
-    local devices = peripheral.getNames()
-    for _, address in pairs(devices) do
-      if string.find(peripheral.getType(address), "apiculture") and peripheral.getType(address):sub(21,21) == "0" == true then
-        apiary = peripheral.wrap(address)
-        break
-      end
-    end
-  end
+  local apiary = findApiary()
   if apiary ~= nil then
     if dependencyCheck(apiary) then
       print("AutoBee running.")
