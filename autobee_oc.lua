@@ -18,6 +18,30 @@ function peripheralCheck()
   dependencyCheck(component.proxy(apiary))
 end
 
+-- looks at a device and determines if it's a valid apiary, returns address on true else return false
+function isApiary(address)
+  if address == nil then return false end
+  -- 1.10.2 Apiaries
+  if string.find(address, "bee_housing") then -- TODO discriminate apiaries versus bee houses
+    return address
+  -- 1.7.10 Apiaries
+  elseif string.find(address, "apiculture") and address:sub(21,21) == "0" then
+    return address
+  else
+  return false
+  end
+end
+
+-- examines peripherals and returns a valid apiary or nil
+function findApiary()
+  local devices = component.list()
+  for address, device in pairs(devices) do
+    if isApiary(address) then
+      return component.proxy(address)
+    end
+  end
+end
+
 -- Version Check
 if pcall(function() component = require("component") end) == true then
   if component.proxy ~= nil then
@@ -54,8 +78,7 @@ end
 
 function addDevice(address)
   if address == nil then return false end
-  local type = component.type(address) -- address is the address for OpenComputers
-  if string.find(type, "bee_housing") then -- TODO discriminate apiaries versus bee houses
+  if isApiary(address) then
     local apiary = Apiary(component.proxy(address), address)
     apiaryTimerIDs[address] = event.timer(delay, function() apiary.checkOutput() end, math.huge)
     print(size(apiaryTimerIDs).." apiaries connected.")
