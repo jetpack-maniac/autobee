@@ -1,13 +1,10 @@
 ---- AutoBee for ComputerCraft ----
 
 -- debug
-
 local printTimers = false
 local outputDebug = true
-
 -- end debug
 
-local running = true
 local running = true
 if pcall(function() dofile("autobeeCore.lua") end) == false then
   if pcall(function() dofile("autobee/autobeeCore.lua") end) == false then
@@ -45,7 +42,6 @@ function findApiary()
 end
 
 -- Peripheral check
-
 function peripheralCheck()
   local apiary = findApiary()
   if apiary ~= nil then
@@ -72,7 +68,6 @@ end
 local apiaryTimerIDs = {}
 
 -- Device Management
-
 function removeDevices()
   for timerID, address in pairs(apiaryTimerIDs) do
     os.cancelTimer(timerID)
@@ -97,7 +92,6 @@ function initDevices()
 end
 
 -- ComputerCraft Event-based Functions
-
 function deleteTimer(timerID)
   apiaryTimerIDs[timerID] = nil
 end
