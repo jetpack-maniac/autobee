@@ -205,7 +205,7 @@ function Apiary(device, address)
       else
         print("AutoBee Error: PCall failed on plethora pull")
       end
-    elseif peripheralVersion == "Plethora" then
+    elseif peripheralVersion == "OpenPeripherals" then
       if pcall(function() device.pullItemIntoSlot(sourceEntity, fromSlot, amount, destinationSlot) end) then
         return true
       else
