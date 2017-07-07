@@ -111,9 +111,7 @@ while running do
     if keyboard.isKeyDown(keyboard.keys.w) and keyboard.isControlDown() then
       event.ignore("component_available",deviceConnect)
       event.ignore("component_removed",deviceDisconnect)
-      for address, _ in pairs(apiaryTimerIDs) do
-        removeDevices()
-      end
+      removeDevices()
       print("AutoBee: Interrupt detected. Closing program.")
       break
     end
