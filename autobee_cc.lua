@@ -2,14 +2,16 @@
 
 -- debug
 
-local printTimers = true
+local printTimers = false
 local outputDebug = true
 
 -- end debug
 
 local running = true
-if shell.run("autobeeCore.lua") == false then
-  error("Failed to load core")
+if pcall(function() dofile("autobeeCore.lua") end) == false then
+  if pcall(function() dofile("autobee/autobeeCore.lua") end) == false then
+    error("Failed to load autobeeCore library.")
+  end
 end
 
 -- looks at a device and determines if it's a valid apiary, returns true or false
@@ -30,7 +32,7 @@ end
 function findApiary()
   local devices = peripheral.getNames()
   for _, address in pairs(devices) do
-    if isApiary(address) ~= nil then
+    if isApiary(address) == true then
       return peripheral.wrap(address)
     end
   end
