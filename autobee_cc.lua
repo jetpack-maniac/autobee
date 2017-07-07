@@ -8,7 +8,9 @@ local outputDebug = true
 -- end debug
 
 local running = true
-dofile("autobeeCore.lua")
+if shell.run("autobeeCore.lua") == false then
+  error("Failed to load core")
+end
 
 -- looks at a device and determines if it's a valid apiary, returns true or false
 function isApiary(address)
@@ -40,7 +42,7 @@ end
 function peripheralCheck()
   local apiary = findApiary()
   if apiary ~= nil then
-    if dependencyCheck(apiary) then
+    if dependencyCheck(apiary) == true then
       print("AutoBee running.")
       print("Press W to terminate program. Press L to clear terminal.")
     end
@@ -52,7 +54,7 @@ end
 -- Version check
 if os.version ~= nil then -- This is a ComputerCraft OS API method
   -- if string.find(os.version(), "CraftOS") == true then
-  if os.version() == "CraftOS 1.7" then -- This is ComputerCraft for 1.9/1.10
+  if os.version() == "CraftOS 1.8" or os.version() == "CraftOS 1.7" then -- This is ComputerCraft for 1.9/1.10
     version = "ComputerCraft"
     peripheralCheck()
   else
