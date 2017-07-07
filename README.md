@@ -1,5 +1,5 @@
 # AutoBee v1.0
-Last Updated: 16 June 2016
+Last Updated: 7 July 2017
 
 ## 1. Purpose
 
@@ -13,17 +13,26 @@ AutoBee automates Forestry Apiaries.  Currently Bee Houses and Alvearies are not
 
 ## 3. Relevant Mod Versions:
 
-Written on:
-- Minecraft                   1.7.10
-- Forge                       10.13.4.1614-1.7.10
-- Forestry                    4.2.11.59
-- OpenComputers               1.5.22.46
-- ComputerCraft               1.75
-- OpenPeripherals All In One  7
+For 1.7.10:
+- ComputerCraft, (or OpenComputers), OpenPeripherals, Forestry
+
+For 1.10.2
+- ComputerCraft, Plethora Peripherals, Forestry
 
 Will it work on others?  Potentially.  If not, the code was made as modular as possible to keep version to version updates as streamlined as possible.
 
-## 4. Configuration
+## 4. What about this version?
+
+- Minecraft 1.8.9?
+Forestry is unavailable.  No bees then.
+
+- Minecraft 1.9.4?
+Neither OpenPeripherals or Plethora Peripherals are available.  Those mods are required to be able to move items.  Without one, this programd does not work.
+
+- OpenComputers on Minecraft 1.10.2?
+Currently OpenComputers does not by default import ComputerCraft APIs.  Plethora Peripherals is a ComputerCraft API.
+
+## 5. Configuration
 
 ```sh
 chestSize = 27
