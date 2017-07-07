@@ -185,10 +185,6 @@ function Apiary(device, address)
         print("AutoBee Error: PCall failed on plethora push")
       end
     elseif peripheralVersion == "OpenPeripherals" then
-      -- print(destinationEntity)
-      -- print(fromSlot)
-      -- print(amount)
-      -- print(destinationSlot)
       if pcall(function() device.pushItemIntoSlot(destinationEntity, fromSlot, amount, destinationSlot) end) then
         return true
       else
