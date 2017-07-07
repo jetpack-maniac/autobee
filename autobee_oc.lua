@@ -39,7 +39,8 @@ function findApiary()
   for address, device in pairs(devices) do
     if isApiary(address) then
       return component.proxy(address)
-    end
+    else
+      return false
   end
 end
 
