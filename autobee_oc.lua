@@ -1,7 +1,11 @@
 ---- AutoBee for OpenComputers ----
 
 local running = true
-dofile("autobeeCore.lua")
+if pcall(function() dofile("autobeeCore.lua") end) == false then
+  if pcall(function() dofile("autobee/autobeeCore.lua") end) == false then
+    error("Failed to load autobeeCore library.")
+  end
+end
 
 -- Peripheral check
 function peripheralCheck()
