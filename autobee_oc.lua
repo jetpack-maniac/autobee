@@ -21,11 +21,12 @@ end
 -- looks at a device and determines if it's a valid apiary, returns true or false
 function isApiary(address)
   if address == nil then return false end
+  device = component.type(address)
   -- 1.10.2 Apiaries
-  if string.find(address, "bee_housing") then -- TODO discriminate apiaries versus bee houses
+  if string.find(device, "bee_housing") then -- TODO discriminate apiaries versus bee houses
     return true
   -- 1.7.10 Apiaries
-  elseif string.find(address, "apiculture") and address:sub(21,21) == "0" then
+  elseif string.find(device, "apiculture") and device:sub(21,21) == "0" then
     return true
   else
   return false
@@ -65,20 +66,20 @@ function deviceConnect(event, address)
 end
 
 function deviceDisconnect(event, address)
-  removeDevice(address)
+  removeDevices()
+  initDevices()
 end
 
-function removeDevice(device)
+function removeDevices()
   for timerID, address in pairs(apiaryTimerIDs) do
-    event.canel(address)
+    event.cancel(address)
   end
   apiaryTimerIDs = {}
-  initDevices()
 end
 
 function addDevice(address)
   if address == nil then return false end
-  if isApiary(address) then
+  if isApiary(address) == true then
     local apiary = Apiary(component.proxy(address), address)
     apiaryTimerIDs[address] = event.timer(delay, function() apiary.checkOutput() end, math.huge)
     print(size(apiaryTimerIDs).." apiaries connected.")
@@ -111,7 +112,7 @@ while running do
       event.ignore("component_available",deviceConnect)
       event.ignore("component_removed",deviceDisconnect)
       for address, _ in pairs(apiaryTimerIDs) do
-        removeDevice(address)
+        removeDevices()
       end
       print("AutoBee: Interrupt detected. Closing program.")
       break
