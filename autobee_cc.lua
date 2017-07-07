@@ -21,11 +21,10 @@ if os.version ~= nil then -- This is a ComputerCraft OS API method
         print("Press W to terminate program. Press L to clear terminal.")
       end
     else
-      print("AutoBee Error: No apiaryTimerIDs found.")
-      running = false
+      error("No apiaries connected.")
     end
   else
-    error("AutoBee Error: This version is for ComputerCraft.  See https://github.com/jetpack-maniac/autobee for more details.")
+    error("This version is for ComputerCraft.  See https://github.com/jetpack-maniac/autobee for more details.")
   end
 end
 

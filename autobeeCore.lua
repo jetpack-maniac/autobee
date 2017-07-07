@@ -47,10 +47,7 @@ function dependencyCheck(device)
     peripheralVersion = "OpenPeripherals"
   end
   if peripheralVersion == nil then
-    print("AutoBee Error: This game server lacks a required game mod.")
-    print("Use 'autobee -hp' or 'autobee peripheral' for more info.")
-    running = false
-    return false
+    error("This game server lacks a required game mod. Use 'autobee -hp' or 'autobee peripheral' for more info.")
   end
   return true
 end

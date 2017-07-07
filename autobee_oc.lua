@@ -13,7 +13,7 @@ if pcall(function() component = require("component") end) == true then
     print("AutoBee running.")
     print("Hold Ctrl+W to stop. Hold Ctrl+L to clear terminal.")
   else
-    error("AutoBee Error: This version is for OpenComputers.  See https://github.com/jetpack-maniac/autobee for more details.")
+    error("This version is for OpenComputers.  See https://github.com/jetpack-maniac/autobee for more details.")
 end
 
 local apiaryTimerIDs = {}
