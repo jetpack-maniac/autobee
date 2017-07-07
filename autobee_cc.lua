@@ -12,6 +12,7 @@ dofile("autobeeCore.lua")
 
 -- looks at a device and determines if it's a valid apiary, returns address on true else return false
 function isApiary(address)
+  if address == nil then return false end
   -- 1.10.2 Apiary
   if string.find(peripheral.getType(address), "forestry_apiary") then
     return address
@@ -61,6 +62,8 @@ end
 
 local apiaryTimerIDs = {}
 
+-- Device Management
+
 function removeDevices()
   for timerID, address in pairs(apiaryTimerIDs) do
     os.cancelTimer(timerID)
@@ -70,8 +73,7 @@ function removeDevices()
 end
 
 function addDevice(address)
-  if address == nil then return false end -- address is the 'side' for ComputerCraft
-  if string.find(peripheral.getType(address), "forestry_apiary") then
+  if isApiary(address) ~= false then
     apiaryTimerIDs[os.startTimer(delay)] = Apiary(peripheral.wrap(address), address)
     print(size(apiaryTimerIDs).." apiaries connected.")
     return true
@@ -86,11 +88,10 @@ function initDevices()
   end
 end
 
--- ComputerCraft Functions
+-- ComputerCraft Event-based Functions
 
 function deleteTimer(timerID)
   apiaryTimerIDs[timerID] = nil
-  -- print("Deleted Timer ID: "..timerID)
 end
 
 function handleTimer()
