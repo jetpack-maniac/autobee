@@ -1,4 +1,4 @@
-# AutoBee v1.0
+# AutoBee v1.1
 Last Updated: 7 July 2017
 
 ## 1. Purpose
