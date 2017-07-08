@@ -1,14 +1,22 @@
 ---- AutoBee for ComputerCraft ----
 
--- debug
-local printTimers = false
-local outputDebug = true
--- end debug
 
+-- Global variables
 local running = true
 local apiaryTimer = nil
 local apiaries = {}
 
+-- Version check
+if os.version ~= nil then -- This is a ComputerCraft OS API method
+  -- if string.find(os.version(), "CraftOS") == true then
+  if os.version() == "CraftOS 1.8" or os.version() == "CraftOS 1.7" then -- This is ComputerCraft for 1.9/1.10
+    version = "ComputerCraft"
+  else
+    error("This version is for ComputerCraft.  See https://github.com/jetpack-maniac/autobee for more details.")
+  end
+end
+
+-- Loads the core library, fetches if missing
 if pcall(function() dofile("autobeeCore.lua") end) == false then
   if pcall(function() dofile("autobee/autobeeCore.lua") end) == false then
     print("Core Autobee library not found.  Fetching via Github.")
@@ -23,6 +31,16 @@ if pcall(function() dofile("autobeeCore.lua") end) == false then
         error("Could not create "..filename..", the disk is full or read-only.")
       end
     end
+  end
+end
+
+-- Peripheral check
+function peripheralCheck()
+  local apiary = findApiary()
+  if apiary ~= nil then
+    dependencyCheck(apiary)
+  else
+    print("AutoBee Warning: No apiaries detected.")
   end
 end
 
@@ -51,37 +69,12 @@ function findApiary()
   return nil
 end
 
--- Peripheral check
-function peripheralCheck()
-  local apiary = findApiary()
-  if apiary ~= nil then
-    if dependencyCheck(apiary) == true then
-      print("AutoBee running.")
-      print("Press W to terminate program. Press L to clear terminal.")
-    end
-  else
-    print("AutoBee Warning: No apiaries detected.")
-  end
-end
-
--- Version check
-if os.version ~= nil then -- This is a ComputerCraft OS API method
-  -- if string.find(os.version(), "CraftOS") == true then
-  if os.version() == "CraftOS 1.8" or os.version() == "CraftOS 1.7" then -- This is ComputerCraft for 1.9/1.10
-    version = "ComputerCraft"
-    peripheralCheck()
-  else
-    error("This version is for ComputerCraft.  See https://github.com/jetpack-maniac/autobee for more details.")
-  end
-end
-
 -- Device Management
 function removeDevices()
   os.cancelTimer(apiaryTimer)
   apiaries = {}
 end
 
--- work around for CraftOS dropping timers
 function addDevice(address)
   if isApiary(address) == true then
     table.insert(apiaries, Apiary(peripheral.wrap(address)))
@@ -94,14 +87,6 @@ function initDevices()
     addDevice(device)
   end
   os.startTimer(delay)
-end
-
-function printInfo()
-    term.clear()
-    term.setCursorPos(1,1)
-    print("AutoBee running.")
-    print("Press W to stop program. Press L to clear terminal.")
-    print(size(apiaries).." apiaries connected.")
 end
 
 -- ComputerCraft Event-based Functions
@@ -127,6 +112,8 @@ end
 function humanInteraction()
   local _, data = os.pullEvent("key_up")
   if data == keys.l then
+    term.setCursorPos(1,1)
+    term.clear()
     printInfo()
   elseif data == keys.w then
     print("AutoBee: Interrupt detected. Closing program.")
@@ -137,10 +124,17 @@ function humanInteraction()
   end
 end
 
+function printInfo()
+    print("AutoBee running.")
+    print("Press W to stop program. Press L to clear terminal.")
+    print(size(apiaries).." apiaries connected.")
+end
+
 ----------------------
 -- The main loop
 ----------------------
 
+peripheralCheck()
 if running == true then 
   initDevices()
   printInfo()

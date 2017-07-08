@@ -1,6 +1,8 @@
 ---- AutoBee for OpenComputers ----
 
+-- Globarl variables
 local running = true
+local apiaryTimerIDs = {}
 
 -- Version Check
 if pcall(function() component = require("component") end) == true then
@@ -88,10 +90,8 @@ function findApiary()
   end
 end
 
-peripheralCheck()
-local apiaryTimerIDs = {}
-
---These next two functions are callbacks to enable OC events to work properly
+-- Device Management
+-- These next two functions are callbacks to enable OC events to work properly
 function deviceConnect(event, address)
   addDevice(address)
 end
@@ -140,10 +140,10 @@ end
 -- The main loop
 ----------------------
 
+peripheralCheck()
 if running == true then 
-  initDevices()      print("AutoBee running.")
-      print("Hold Ctrl+W to stop. Hold Ctrl+L to clear terminal.")
-      print(size(apiaryTimerIDs).." apiaries connected.")
+  initDevices()
+  printInfo()
 end
 
 while running do
