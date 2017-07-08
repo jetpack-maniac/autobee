@@ -13,13 +13,12 @@ AutoBee automates Forestry Apiaries.  Currently Bee Houses and Alvearies are not
 
 ## 3. Relevant Mod Versions:
 
-For 1.7.10:
-- ComputerCraft, (or OpenComputers), OpenPeripherals, Forestry
+- All Versions: Forestry
 
-For 1.10.2
-- ComputerCraft, Plethora Peripherals, Forestry
+- 1.7.10: ComputerCraft or OpenComputers, OpenPeripherals
 
-Will it work on others?  Potentially.  If not, the code was made as modular as possible to keep version to version updates as streamlined as possible.
+- 1.10.2: ComputerCraft, Plethora Peripherals
+
 
 ## 4. What about this version?
 
