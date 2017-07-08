@@ -65,7 +65,7 @@ if os.version ~= nil then -- This is a ComputerCraft OS API method
   end
 end
 
-local apiaryTimerIDs = {}
+local apiaries = {}
 
 -- Device Management
 function removeDevices()
@@ -75,13 +75,11 @@ function removeDevices()
   apiaryTimerIDs = {}
 end
 
+-- work around for CraftOS dropping timers
 function addDevice(address)
-  if isApiary(address) ~= false then
-    apiaryTimerIDs[os.startTimer(delay)] = Apiary(peripheral.wrap(address), address)
-    print(size(apiaryTimerIDs).." apiaries connected.")
-    return true
+  if isApiary(address) == true then
+    table.insert(apiaries, Apiary(peripheral.wrap(address)))
   end
-  return false
 end
 
 function initDevices()
@@ -89,6 +87,7 @@ function initDevices()
   for _, device in ipairs(devices) do
     addDevice(device)
   end
+  os.startTimer(delay)
 end
 
 -- ComputerCraft Event-based Functions
@@ -98,16 +97,10 @@ end
 
 function handleTimer()
   local _, data = os.pullEvent("timer")
-  apiaryTimerIDs[os.startTimer(delay)] = apiaryTimerIDs[data]
-  if printTimers == true then 
-    print("Timer: "..apiaryTimerIDs[data].getID())
+  for apiary, address in pairs(apiaries) do
+    apiaries[apiary].checkApiary()
+    os.startTimer(delay)
   end
-  if outputDebug == true then
-    if pcall(function() apiaryTimerIDs[data].checkApiary() end) == false then
-      print("Pcall failed checkOutput on "..apiaryTimerIDs[data].getID())
-    end
-  end
-  deleteTimer(data)
 end
 
 function handlePeripheralAttach()
@@ -128,37 +121,13 @@ function humanInteraction()
     term.setCursorPos(1,1)
     print("AutoBee running.")
     print("Press W to stop program. Press L to clear terminal.")
-    print(size(apiaryTimerIDs).." apiaries connected.")
+    print(size(apiaries).." apiaries connected.")
   elseif data == keys.w then
     print("AutoBee: Interrupt detected. Closing program.")
     for timerID, _ in pairs(apiaryTimerIDs) do
       os.cancelTimer(timerID)
     end
     running = false
-  elseif data == keys.t then
-    if printTimers == false then
-      print("Timers printing.")
-      printTimers = true
-    else
-      print("Stopping timers print.")
-      printTimers = false
-    end
-  elseif data == keys.o then
-    if outputDebug == false then
-      print("Output on.")
-      outputDebug = true
-    else
-      print("Output off.")
-      outputDebug = false
-    end
-  elseif data == keys.a then
-    print("Rebuilding apiary map.")
-    removeDevices()
-  elseif data == keys.m then
-    print("Printing apiary map:")
-    for timerID, apiary in pairs(apiaryTimerIDs) do
-      print(timerID..": "..apiary.getID())
-    end
   end
 end
 
