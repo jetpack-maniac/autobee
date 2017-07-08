@@ -14,6 +14,9 @@ chestDir = "up"
 
 -- how long the computer will wait in seconds before checking the apiaries
 delay = 2
+
+-- debug printing for functions
+debugPrints = false
 --- End of Configuration
 
 --------------------------------------------------------------------------------
@@ -156,13 +159,13 @@ function Apiary(device, address)
     if peripheralVersion == "Plethora" then
       if pcall(function() itemMeta = device.getItemMeta(slot) end) then
         return itemMeta
-      else
+      elseif debugPrints == true then
         print("AutoBee Error: PCall failed on plethora check slot")
       end
     elseif peripheralVersion == "OpenPeripherals" then
       if pcall(function() itemMeta = device.getStackInSlot(slot) end) then
         return itemMeta
-      else
+      elseif debugPrints == true then
         print("AutoBee Error: PCall failed on openp check slot")
       end    
     end
@@ -173,13 +176,13 @@ function Apiary(device, address)
     if peripheralVersion == "Plethora" then
       if pcall(function() device.pushItems(destinationEntity, fromSlot, amount, destinationSlot) end) then
         return true
-      else
+      elseif debugPrints == true then
         print("AutoBee Error: PCall failed on plethora push")
       end
     elseif peripheralVersion == "OpenPeripherals" then
       if pcall(function() device.pushItemIntoSlot(destinationEntity, fromSlot, amount, destinationSlot) end) then
         return true
-      else
+      elseif debugPrints == true then
         print("AutoBee Error: PCall failed on openp push")
       end
     end
@@ -190,13 +193,13 @@ function Apiary(device, address)
     if peripheralVersion == "Plethora" then
       if pcall(function() device.pullItems(sourceEntity, fromSlot, amount, destinationSlot) end) then
         return true
-      else
+      elseif debugPrints == true then
         print("AutoBee Error: PCall failed on plethora pull")
       end
     elseif peripheralVersion == "OpenPeripherals" then
       if pcall(function() device.pullItemIntoSlot(sourceEntity, fromSlot, amount, destinationSlot) end) then
         return true
-      else
+      elseif debugPrints == true then
         print("AutoBee Error: PCall failed on openp pull")
       end
     end 
