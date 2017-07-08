@@ -105,13 +105,13 @@ function Container(tileEntity)
   function self.checkSlot(slot)
     local itemMeta = nil
     if peripheralVersion == "Plethora" then
-      if pcall(function() itemMeta = device.getItemMeta(slot) end) then
+      if pcall(function() itemMeta = tileEntity.getItemMeta(slot) end) then
         return itemMeta
       elseif debugPrints == true then
         print("AutoBee Error: PCall failed on plethora check slot")
       end
     elseif peripheralVersion == "OpenPeripherals" then
-      if pcall(function() itemMeta = device.getStackInSlot(slot) end) then
+      if pcall(function() itemMeta = tileEntity.getStackInSlot(slot) end) then
         return itemMeta
       elseif debugPrints == true then
         print("AutoBee Error: PCall failed on openp check slot")
@@ -211,8 +211,9 @@ function Apiary(device, address)
       if matchAny(name, queenNames) then return "queen" end
       if matchAny(name, princessNames) then return "princess" end
       if matchAny(name, droneNames) then return "drone" end
-    else
       return false
+    else
+      return nil
     end
   end
 
@@ -238,20 +239,22 @@ function Apiary(device, address)
   function self.checkOutput()
     for slot=3,9 do
       local type = self.itemType(slot)
-      if type == "princess" then
-        if self.isPrincessSlotOccupied() == true then
-          self.push(chestDir, slot)
+      if type ~= nil then
+        if type == "princess" then
+          if self.isPrincessSlotOccupied() == true then
+            self.push(chestDir, slot)
+          else
+            self.movePrincess(slot)
+          end
+        elseif type == "drone" then
+          if self.isDroneSlotOccupied() == true then
+            self.push(chestDir, slot)
+          else
+            self.moveDrone(slot)
+          end
         else
-          self.movePrincess(slot)
-        end
-      elseif type == "drone" then
-        if self.isDroneSlotOccupied() == true then
           self.push(chestDir, slot)
-        else
-          self.moveDrone(slot)
         end
-      else
-        self.push(chestDir, slot)
       end
     end
   end
