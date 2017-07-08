@@ -6,6 +6,9 @@ local outputDebug = true
 -- end debug
 
 local running = true
+local apiaryTimer = nil
+local apiaries = {}
+
 if pcall(function() dofile("autobeeCore.lua") end) == false then
   if pcall(function() dofile("autobee/autobeeCore.lua") end) == false then
     print("Core Autobee library not found.  Fetching via pastebin.com/Vvckgdst")
@@ -65,14 +68,10 @@ if os.version ~= nil then -- This is a ComputerCraft OS API method
   end
 end
 
-local apiaries = {}
-
 -- Device Management
 function removeDevices()
-  for timerID, address in pairs(apiaryTimerIDs) do
-    os.cancelTimer(timerID)
-  end
-  apiaryTimerIDs = {}
+  os.cancelTimer(apiaryTimer)
+  apiaries = {}
 end
 
 -- work around for CraftOS dropping timers
@@ -91,16 +90,12 @@ function initDevices()
 end
 
 -- ComputerCraft Event-based Functions
-function deleteTimer(timerID)
-  apiaryTimerIDs[timerID] = nil
-end
-
 function handleTimer()
   local _, data = os.pullEvent("timer")
   for apiary, address in pairs(apiaries) do
     apiaries[apiary].checkApiary()
-    os.startTimer(delay)
   end
+  apiaryTimer = os.startTimer(delay)
 end
 
 function handlePeripheralAttach()
@@ -124,8 +119,8 @@ function humanInteraction()
     print(size(apiaries).." apiaries connected.")
   elseif data == keys.w then
     print("AutoBee: Interrupt detected. Closing program.")
-    for timerID, _ in pairs(apiaryTimerIDs) do
-      os.cancelTimer(timerID)
+    if apiaryTimer ~= nil then 
+      os.cancelTimer(apiaryTimer)
     end
     running = false
   end
