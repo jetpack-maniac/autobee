@@ -57,10 +57,70 @@ end
 
 -- End of Misc Functions
 --------------------------------------------------------------------------------
+-- Container class
+
+function Container(tileEntity)
+  local self = {}
+
+  function self.checkSlot(slot)
+    local itemMeta = nil
+    if peripheralVersion == "Plethora" then
+      if pcall(function() itemMeta = device.getItemMeta(slot) end) then
+        return itemMeta
+      elseif debugPrints == true then
+        print("AutoBee Error: PCall failed on plethora check slot")
+      end
+    elseif peripheralVersion == "OpenPeripherals" then
+      if pcall(function() itemMeta = device.getStackInSlot(slot) end) then
+        return itemMeta
+      elseif debugPrints == true then
+        print("AutoBee Error: PCall failed on openp check slot")
+      end    
+    end
+  end
+
+  -- Interface for item pushing, follows the OpenPeripherals/Plethora format directly
+  function self.push(destinationEntity, fromSlot, amount, destinationSlot)
+    if peripheralVersion == "Plethora" then
+      if pcall(function() device.pushItems(destinationEntity, fromSlot, amount, destinationSlot) end) then
+        return true
+      elseif debugPrints == true then
+        print("AutoBee Error: PCall failed on plethora push")
+      end
+    elseif peripheralVersion == "OpenPeripherals" then
+      if pcall(function() device.pushItemIntoSlot(destinationEntity, fromSlot, amount, destinationSlot) end) then
+        return true
+      elseif debugPrints == true then
+        print("AutoBee Error: PCall failed on openp push")
+      end
+    end
+  end
+
+  -- Interface for item pulling,  follows the OpenPeripherals/Plethora format directly
+  function self.pull(sourceEntity, fromSlot, amount, destinationSlot)
+    if peripheralVersion == "Plethora" then
+      if pcall(function() device.pullItems(sourceEntity, fromSlot, amount, destinationSlot) end) then
+        return true
+      elseif debugPrints == true then
+        print("AutoBee Error: PCall failed on plethora pull")
+      end
+    elseif peripheralVersion == "OpenPeripherals" then
+      if pcall(function() device.pullItemIntoSlot(sourceEntity, fromSlot, amount, destinationSlot) end) then
+        return true
+      elseif debugPrints == true then
+        print("AutoBee Error: PCall failed on openp pull")
+      end
+    end 
+  end
+
+  return self
+end
+
+--------------------------------------------------------------------------------
 -- Apiary class
 
 function Apiary(device, address)
-  local self = {}
+  local self = Container(device)
 
   local queen = {"beeQueenGE", "forestry:beeQueenGE"}
   local princess = {"beePrincessGE", "forestry:beePrincessGE"}
@@ -151,61 +211,6 @@ function Apiary(device, address)
       return false
     end
   end
-
-  -- Interfaces
-
-  function self.checkSlot(slot)
-    local itemMeta = nil
-    if peripheralVersion == "Plethora" then
-      if pcall(function() itemMeta = device.getItemMeta(slot) end) then
-        return itemMeta
-      elseif debugPrints == true then
-        print("AutoBee Error: PCall failed on plethora check slot")
-      end
-    elseif peripheralVersion == "OpenPeripherals" then
-      if pcall(function() itemMeta = device.getStackInSlot(slot) end) then
-        return itemMeta
-      elseif debugPrints == true then
-        print("AutoBee Error: PCall failed on openp check slot")
-      end    
-    end
-  end
-
-  -- Interface for item pushing, follows the OpenPeripherals/Plethora format directly
-  function self.push(destinationEntity, fromSlot, amount, destinationSlot)
-    if peripheralVersion == "Plethora" then
-      if pcall(function() device.pushItems(destinationEntity, fromSlot, amount, destinationSlot) end) then
-        return true
-      elseif debugPrints == true then
-        print("AutoBee Error: PCall failed on plethora push")
-      end
-    elseif peripheralVersion == "OpenPeripherals" then
-      if pcall(function() device.pushItemIntoSlot(destinationEntity, fromSlot, amount, destinationSlot) end) then
-        return true
-      elseif debugPrints == true then
-        print("AutoBee Error: PCall failed on openp push")
-      end
-    end
-  end
-
-  -- Interface for item pulling,  follows the OpenPeripherals/Plethora format directly
-  function self.pull(sourceEntity, fromSlot, amount, destinationSlot)
-    if peripheralVersion == "Plethora" then
-      if pcall(function() device.pullItems(sourceEntity, fromSlot, amount, destinationSlot) end) then
-        return true
-      elseif debugPrints == true then
-        print("AutoBee Error: PCall failed on plethora pull")
-      end
-    elseif peripheralVersion == "OpenPeripherals" then
-      if pcall(function() device.pullItemIntoSlot(sourceEntity, fromSlot, amount, destinationSlot) end) then
-        return true
-      elseif debugPrints == true then
-        print("AutoBee Error: PCall failed on openp pull")
-      end
-    end 
-  end
-
-  -- End of Interfaces
 
   function self.checkInput()
     for slot=1,2 do
