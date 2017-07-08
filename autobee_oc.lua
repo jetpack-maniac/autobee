@@ -3,7 +3,8 @@
 local running = true
 if pcall(function() dofile("autobeeCore.lua") end) == false then
   if pcall(function() dofile("autobee/autobeeCore.lua") end) == false then
-    error("Failed to load autobeeCore library.")
+    print("Missing core library, fetching from pastebin.")
+    shell.execute("pastebin get Vvckgdst autobeeCore.lua")
   end
 end
 
