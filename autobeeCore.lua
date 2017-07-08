@@ -50,7 +50,7 @@ function dependencyCheck(device)
     peripheralVersion = "OpenPeripherals"
   end
   if peripheralVersion == nil then
-    error("This game server lacks a required game mod. Use 'autobee -hp' or 'autobee peripheral' for more info.")
+    error("This game server lacks a required game mod. 1.7.10 requires OpePeripherals and 1.10.2 requires Plethora Peripherals.")
   end
   return true
 end
