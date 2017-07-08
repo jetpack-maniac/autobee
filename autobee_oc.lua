@@ -15,12 +15,19 @@ function peripheralCheck()
     -- this is the search for 1.7.10 Forestry apiaries
     if string.find(componentType, "apiculture") and componentType:sub(21,21) == "0" then
       apiary = address
-    -- elseif 
-    -- this is the search for 1.10.2 Forestry apiaries
-
+    -- this is the search for 1.10.2 Forestry apiaries and bee houses
+    elseif componentType == "bee_housing" then
+      apiary = address
+      print("WARNING: OpenComputers on 1.10.2 does not support necessary APIs. See https://github.com/jetpack-maniac/autobee for more information.")
+      os.exit()
     end
   end
-  dependencyCheck(component.proxy(apiary))
+  if apiary == nil then
+    print("No apiaries found.  Closing program.")
+    os.exit()    
+  else
+    dependencyCheck(component.proxy(apiary))
+  end
 end
 
 -- looks at a device and determines if it's a valid apiary, returns true or false
@@ -46,6 +53,7 @@ function findApiary()
       return component.proxy(address)
     else
       return false
+    end
   end
 end
 
