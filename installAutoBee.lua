@@ -4,7 +4,7 @@ computerCraftURLs ={
   autobeeCore = "https://raw.githubusercontent.com/jetpack-maniac/autobee/master/autobeeCore.lua"
 }
 
-OpenComputersURLs = {
+openComputersURLs = {
   autobee = "https://raw.githubusercontent.com/jetpack-maniac/autobee/master/autobee_oc.lua",
   autobeeCore = "https://raw.githubusercontent.com/jetpack-maniac/autobee/master/autobeeCore.lua"
 }
@@ -20,10 +20,9 @@ if os.version ~= nil then -- This is a ComputerCraft OS API method
   end
 elseif pcall(function() computer = require("computer") computer.energy() end) == true then -- This is an OpenComputers Computer API method
   component = require("component")
-  keyboard = require("keyboard")
-  event = require("event")
-  term = require("term")
-  serialization = require("serialization")
+  filesystem = require("filesystem")
+  internet = require("internet")
+  shell = require("shell")
   version = "OpenComputers"
 end
 
@@ -53,5 +52,18 @@ if version == "ComputerCraft" then
 end
 
 if version == "OpenComputers" then
-  -- WIP
+  local installLocation = "/home/autobee/"
+  if filesystem.exists(installLocation) == false then
+    filesystem.makeDirectory(installLocation)
+  end
+  for filename, url in pairs(openComputersURLs) do
+    filename = filename..".lua"
+    print("Installing "..installLocation..filename)
+    local file = io.open(installLocation..filename, "w")
+    for chunk in internet.request(url) do
+      file:write(chunk)
+      file:flush()
+    end
+    file:close()
+  end
 end
