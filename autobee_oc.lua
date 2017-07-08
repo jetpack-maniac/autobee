@@ -1,15 +1,46 @@
 ---- AutoBee for OpenComputers ----
 
 local running = true
-if pcall(function() dofile("autobeeCore.lua") end) == false then
-  if pcall(function() dofile("autobee/autobeeCore.lua") end) == false then
-    print("Missing core library, fetching from pastebin.")
-    shell.execute("pastebin get Vvckgdst autobeeCore.lua")
+
+-- Version Check
+if pcall(function() component = require("component") end) == true then
+  if component.proxy ~= nil then
+    version = "OpenComputers"
+    keyboard = require("keyboard")
+    event = require("event")
+    filesystem = require("filesystem")
+    internet = require("internet")
+    print("Starting AutoBee..")
+  else
+    error("This version is for OpenComputers.  See https://github.com/jetpack-maniac/autobee for more details.")
+  end
+end
+
+-- Loads the core library, fetches if missing
+function loadCore()
+  local searchPath = "/home/autobee/"
+  local library = "autobeeCore.lua"
+  local coreURL = "https://github.com/jetpack-maniac/autobee/blob/master/autobeeCore.lua"
+  if filesystem.exists(searchPath) == false then
+    filesystem.makeDirectory(searchPath)
+  end
+  if filesystem.exists(searchPath..library) then
+    dofile("autobeeCore.lua")
+    print("Loaded AutoBee Core...")
+  else
+    print("Missing AutoBee Core, fetching from Github...")
+    local file = io.open(searchPath..library, "w")
+    for chunk in internet.request(coreURL) do
+      file:write(chunk)
+      file:flush()
+    end
+    file:close()
   end
 end
 
 -- Peripheral check
 function peripheralCheck()
+  loadCore()
   local apiary = nil
   for address, componentType in pairs(component.list()) do
     -- this is the search for 1.7.10 Forestry apiaries
@@ -57,21 +88,7 @@ function findApiary()
   end
 end
 
--- Version Check
-if pcall(function() component = require("component") end) == true then
-  if component.proxy ~= nil then
-    version = "OpenComputers"
-    keyboard = require("keyboard")
-    event = require("event")
-    term = require("term")
-    peripheralCheck()
-    print("AutoBee running.")
-    print("Hold Ctrl+W to stop. Hold Ctrl+L to clear terminal.")
-  else
-    error("This version is for OpenComputers.  See https://github.com/jetpack-maniac/autobee for more details.")
-  end
-end
-
+peripheralCheck()
 local apiaryTimerIDs = {}
 
 --These next two functions are callbacks to enable OC events to work properly
@@ -96,7 +113,6 @@ function addDevice(address)
   if isApiary(address) == true then
     local apiary = Apiary(component.proxy(address), address)
     apiaryTimerIDs[address] = event.timer(delay, function() apiary.checkApiary() end, math.huge)
-    print(size(apiaryTimerIDs).." apiaries connected.")
     return true
   end
   return false
@@ -114,11 +130,21 @@ function initDevices()
   event.listen("component_removed",deviceDisconnect)
 end
 
+function printInfo()
+  print("AutoBee running.")
+  print("Hold Ctrl+W to stop. Hold Ctrl+L to clear terminal.")
+  print(size(apiaryTimerIDs).." apiaries connected.")
+end
+
 ----------------------
 -- The main loop
 ----------------------
 
-if running == true then initDevices() end -- inits devices upon first run
+if running == true then 
+  initDevices()      print("AutoBee running.")
+      print("Hold Ctrl+W to stop. Hold Ctrl+L to clear terminal.")
+      print(size(apiaryTimerIDs).." apiaries connected.")
+end
 
 while running do
   if version == "OpenComputers" then
@@ -131,9 +157,7 @@ while running do
     end
     if keyboard.isKeyDown(keyboard.keys.l) and keyboard.isControlDown() then
       term.clear()
-      print("AutoBee running.")
-      print("Hold Ctrl+W to stop. Hold Ctrl+L to clear terminal.")
-      print(size(apiaryTimerIDs).." apiaries connected.")
+      printInfo()
     end
     os.sleep(delay)
   end
