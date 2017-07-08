@@ -11,10 +11,17 @@ local apiaries = {}
 
 if pcall(function() dofile("autobeeCore.lua") end) == false then
   if pcall(function() dofile("autobee/autobeeCore.lua") end) == false then
-    print("Core Autobee library not found.  Fetching via pastebin.com/Vvckgdst")
-    shell.run("pastebin get Vvckgdst autobeeCore.lua")
-    if pcall(function() dofile("autobeeCore.lua") end) == false then
-      error("Failed to fetch library.")
+    print("Core Autobee library not found.  Fetching via Github.")
+    local file = nil
+    local response = http.get("https://raw.githubusercontent.com/jetpack-maniac/autobee/master/autobeeCore.lua")
+    if response == nil then
+      error("Could not reach Github.com")
+    else
+      if pcall(function() file = fs.open("autobeeCore.lua", "w") file.write(response.readAll()) file.close() end) then
+        print("Fetched AutoBee Core.")
+      else
+        error("Could not create "..filename..", the disk is full or read-only.")
+      end
     end
   end
 end
