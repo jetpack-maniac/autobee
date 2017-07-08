@@ -61,6 +61,23 @@ end
 
 -- Peripheral Interfaces
 
+function getItemData(container, slot)
+  local itemMeta = nil
+  if peripheralVersion == "Plethora" then
+    if pcall(function() itemMeta = container.getItemMeta(slot) end) then
+      return itemMeta
+    elseif debugPrints == true then
+      print("AutoBee Error: PCall failed on plethora check slot")
+    end
+  elseif peripheralVersion == "OpenPeripherals" then
+    if pcall(function() itemMeta = container.getStackInSlot(slot) end) then
+      return itemMeta
+    elseif debugPrints == true then
+      print("AutoBee Error: PCall failed on openp check slot")
+    end    
+  end
+end
+
 -- Interface for item pushing, follows the OpenPeripherals/Plethora format directly
 function pushItem(container, destinationDirection, fromSlot, amount, destinationSlot)
   if peripheralVersion == "Plethora" then
@@ -102,21 +119,8 @@ end
 function Container(tileEntity)
   local self = {}
 
-  function self.checkSlot(slot)
-    local itemMeta = nil
-    if peripheralVersion == "Plethora" then
-      if pcall(function() itemMeta = tileEntity.getItemMeta(slot) end) then
-        return itemMeta
-      elseif debugPrints == true then
-        print("AutoBee Error: PCall failed on plethora check slot")
-      end
-    elseif peripheralVersion == "OpenPeripherals" then
-      if pcall(function() itemMeta = tileEntity.getStackInSlot(slot) end) then
-        return itemMeta
-      elseif debugPrints == true then
-        print("AutoBee Error: PCall failed on openp check slot")
-      end    
-    end
+  function self.getItemData(slot)
+    return getItemData(tileEntity, slot)
   end
 
   -- Interface for item pushing, follows the OpenPeripherals/Plethora format directly
@@ -144,12 +148,12 @@ function Apiary(device, address)
 
   -- Checks to see if the princess/queen slot (1) is empty or full
   function self.isPrincessSlotOccupied()
-    return self.checkSlot(1) ~= nil
+    return self.getItemData(1) ~= nil
   end
 
   -- Checks to see if the drone slot (2) is empty or full
   function self.isDroneSlotOccupied()
-     return self.checkSlot(2) ~= nil
+     return self.getItemData(2) ~= nil
   end
 
   -- Removes a princess from the output to it's proper chest slot
@@ -206,8 +210,8 @@ function Apiary(device, address)
   end
 
   function self.itemType(slot)
-    if self.checkSlot(slot) ~= nil then
-      local name = self.checkSlot(slot).name
+    if self.getItemData(slot) ~= nil then
+      local name = self.getItemData(slot).name
       if matchAny(name, queenNames) then return "queen" end
       if matchAny(name, princessNames) then return "princess" end
       if matchAny(name, droneNames) then return "drone" end
