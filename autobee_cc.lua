@@ -89,6 +89,14 @@ function initDevices()
   os.startTimer(delay)
 end
 
+function printInfo()
+    term.clear()
+    term.setCursorPos(1,1)
+    print("AutoBee running.")
+    print("Press W to stop program. Press L to clear terminal.")
+    print(size(apiaries).." apiaries connected.")
+end
+
 -- ComputerCraft Event-based Functions
 function handleTimer()
   local _, data = os.pullEvent("timer")
@@ -112,11 +120,7 @@ end
 function humanInteraction()
   local _, data = os.pullEvent("key_up")
   if data == keys.l then
-    term.clear()
-    term.setCursorPos(1,1)
-    print("AutoBee running.")
-    print("Press W to stop program. Press L to clear terminal.")
-    print(size(apiaries).." apiaries connected.")
+    printInfo()
   elseif data == keys.w then
     print("AutoBee: Interrupt detected. Closing program.")
     if apiaryTimer ~= nil then 
@@ -130,7 +134,10 @@ end
 -- The main loop
 ----------------------
 
-if running == true then initDevices() end -- inits devices upon first run
+if running == true then 
+  initDevices()
+  printInfo()
+end
 
 while running do
   parallel.waitForAny(handleTimer, handlePeripheralAttach, handlePeripheralDetach, humanInteraction)
