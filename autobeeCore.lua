@@ -19,6 +19,10 @@ delay = 2
 debugPrints = false
 --- End of Configuration
 
+local queenNames = {"beeQueenGE", "forestry:beeQueenGE"}
+local princessNames = {"beePrincessGE", "forestry:beePrincessGE"}
+local droneNames = {"beeDroneGE", "forestry:beeDroneGE"}
+
 --------------------------------------------------------------------------------
 -- Misc Functions
 
@@ -122,10 +126,6 @@ end
 function Apiary(device, address)
   local self = Container(device)
 
-  local queen = {"beeQueenGE", "forestry:beeQueenGE"}
-  local princess = {"beePrincessGE", "forestry:beePrincessGE"}
-  local drone = {"beeDroneGE", "forestry:beeDroneGE"}
-
   function self.getID()
     return address
   end
@@ -196,9 +196,9 @@ function Apiary(device, address)
   function self.itemType(slot)
     if self.checkSlot(slot) ~= nil then
       local name = self.checkSlot(slot).name
-      if matchAny(name, queen) then return "queen" end
-      if matchAny(name, princess) then return "princess" end
-      if matchAny(name, drone) then return "drone" end
+      if matchAny(name, queenNames) then return "queen" end
+      if matchAny(name, princessNames) then return "princess" end
+      if matchAny(name, droneNames) then return "drone" end
     else
       return false
     end
