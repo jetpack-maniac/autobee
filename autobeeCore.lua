@@ -210,14 +210,15 @@ function Apiary(device, address)
       if type == "princess" then
         if self.queen == true or self.princess == true then
           self.push(chestDir, slot)
-        else
+        elseif status.space >= 2 then
           self.movePrincess(slot)
         end
       elseif type == "drone" then
         if status.drones == 64 then
           self.push(chestDir, slot)
-        else
+        elseif status.space >= 2 then
           self.moveDrone(slot)
+          self.push(chestDir, slot)
         end
       else
         self.push(chestDir, slot)
@@ -226,8 +227,9 @@ function Apiary(device, address)
   end
 
   function self.checkInput()
+    if status.space < 2 then return end
     for slot=1,2 do
-      if status.queen == false and staus.princess == false then
+      if status.queen == false and status.princess == false then
         self.pullPrincess()
       end
       if status.drones < 64 then
@@ -245,7 +247,7 @@ function Apiary(device, address)
   function self.apiarySpaceCheck()
   local freeSlots = 0
     for slot=3,9 do
-      local stack = getItemData(device, slot)
+      local stack = self.getItemData(slot)
       if stack == nil then
         freeSlots = freeSlots+1
       end
@@ -254,20 +256,18 @@ function Apiary(device, address)
   end
 
   function self.checkApiary()
-    local space = self.apiarySpaceCheck()
-    if space >= 2 then
-      self.checkOutput()
-      self.checkInput()
-    end
+    self.status()
+    self.checkOutput()
+    self.checkInput()
   end
 
   function self.status()
-    local queen, princess, drones = nil
-    if self.itemType(1) == "queen" then queen = true else queen = false end
-    if self.itemType(1) == "princess" then princess = true else princess = false end
-    if self.getItemData(2) == nil then drones = 0 else drones = self.getItemData(2).count end
-    local status = {queen, princess, drones, space = self.apiarySpaceCheck()
-    }
+    local queenStatus, princessStatus
+    local droneCount = self.getItemData(2).count
+    if self.itemType(1) == "queen" then queenStatus = true else queenStatus = false end
+    if self.itemType(1) == "princess" then princessStatus = true else princessStatus = false end
+    if droneCount == nil then droneCount = 0 end
+    status = {queen = queenStatus, princessStatus, drones = droneCount, space = self.apiarySpaceCheck() }
     return status
   end
 
