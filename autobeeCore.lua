@@ -142,7 +142,12 @@ end
 
 function Apiary(device, address)
   local self = Container(device)
-  local status = "connected"
+  local status = {
+    queen = nil,
+    princess = nil,
+    drones = 0,
+    space = 0
+  }
   local mode = "standard"
 
   function self.getID()
@@ -155,16 +160,6 @@ function Apiary(device, address)
 
   function self.mode()
     return mode
-  end
-
-  -- Checks to see if the princess/queen slot (1) is empty or full
-  function self.isPrincessSlotOccupied()
-    return self.getItemData(1) ~= nil
-  end
-
-  -- Checks to see if the drone slot (2) is empty or full
-  function self.isDroneSlotOccupied()
-     return self.getItemData(2) ~= nil
   end
 
   -- Removes a princess from the output to it's proper chest slot
@@ -211,15 +206,6 @@ function Apiary(device, address)
     end
   end
 
-  function self.isPrincessOrQueen(slot)
-    local type = self.itemType(slot)
-    if type == "queen" or type == "princess" then
-      return true
-    else
-      return false
-    end
-  end
-
   function self.itemType(slot)
     if self.getItemData(slot) ~= nil then
       local name = self.getItemData(slot).name
@@ -232,25 +218,17 @@ function Apiary(device, address)
     end
   end
 
-  function self.isDrone(slot)
-    if self.itemType(slot) == "drone" then
-      return true
-    else
-      return false
-    end
-  end
-
   function self.emptySlot(slot)
     local type = self.itemType(slot)
     if type ~= nil then
       if type == "princess" then
-        if self.isPrincessSlotOccupied() == true then
+        if self.queen == true or self.princess == true then
           self.push(chestDir, slot)
         else
           self.movePrincess(slot)
         end
       elseif type == "drone" then
-        if self.isDroneSlotOccupied() == true then
+        if status.drones == 64 then
           self.push(chestDir, slot)
         else
           self.moveDrone(slot)
@@ -263,10 +241,10 @@ function Apiary(device, address)
 
   function self.checkInput()
     for slot=1,2 do
-      if self.isPrincessSlotOccupied() == false then
+      if status.queen == false and staus.princess == false then
         self.pullPrincess()
       end
-      if self.isDroneSlotOccupied() == false then
+      if status.drones < 64 then
         self.pullDrone()
       end
     end
@@ -291,12 +269,9 @@ function Apiary(device, address)
 
   function self.checkApiary()
     local space = self.apiarySpaceCheck()
-    print("space: "..space)
     if space >= 2 then
       self.checkOutput()
       self.checkInput()
-    else
-      mode = "full"
     end
   end
 
