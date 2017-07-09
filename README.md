@@ -19,6 +19,8 @@ AutoBee automates Forestry Apiaries.  Currently Bee Houses and Alvearies are not
 
 - 1.10.2: ComputerCraft, Plethora Peripherals
 
+- 1.11.2: ComputerCraft, Plethora Peripherals
+
 
 ## 4. What about this version?
 
@@ -71,5 +73,5 @@ The layout must be properly built by the individual before the system can run.  
 
 - OpenComputers Forum Page: https://oc.cil.li/index.php?/topic/913-autobee-automate-your-forestry-bees/
 - ComputerCraft Forum Page: http://www.computercraft.info/forums2/index.php?/topic/26629-autobee-automate-your-forestry-bees/
-- Pastebin: http://pastebin.com/32eLm50M
+- Pastebin: http://pastebin.com/W4CW4hYt
 - Github: https://github.com/jetpack-maniac/autobee

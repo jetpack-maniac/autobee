@@ -67,7 +67,7 @@ end
 function isApiary(address)
   if address == nil then return false end
   device = component.type(address)
-  -- 1.10.2 Apiaries
+  -- 1.10.2/1.11.2 Apiaries
   if string.find(device, "bee_housing") then -- TODO discriminate apiaries versus bee houses
     return true
   -- 1.7.10 Apiaries

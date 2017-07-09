@@ -47,7 +47,7 @@ end
 -- looks at a device and determines if it's a valid apiary, returns true or false
 function isApiary(address)
   if address == nil then return false end
-  -- 1.10.2 Apiary
+  -- 1.10.2/1.11.2 Apiary
   if string.find(peripheral.getType(address), "forestry_apiary") then
     return true
   -- 1.7.10 Apiary

@@ -3,8 +3,9 @@
 -- These config options tell the apiaries to drop items into the world
 -- WARNING: unless you're using some kind of system to pick them up,
 -- this will cause lag due to floating items piling up in the world
-dropProducts = "false"
-dropDrones = "false"
+-- **Currently unused, WIP
+-- dropProducts = "false"
+-- dropDrones = "false"
 
 -- The max size of the output inventory
 chestSize = 27
