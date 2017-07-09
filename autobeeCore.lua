@@ -1,20 +1,10 @@
 --- Configuration
 
--- These config options tell the apiaries to drop items into the world
--- WARNING: unless you're using some kind of system to pick them up,
--- this will cause lag due to floating items piling up in the world
--- **Currently unused, WIP
--- dropProducts = "false"
--- dropDrones = "false"
-
 -- The max size of the output inventory
 chestSize = 27
 
 -- chest direction relative to apiary
 chestDir = "up"
-
--- how long the computer will wait in seconds before checking the apiaries
-delay = 2
 
 -- debug printing for functions
 debugPrints = false
