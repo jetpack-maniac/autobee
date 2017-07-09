@@ -144,10 +144,6 @@ function Apiary(device, address)
     return address
   end
 
-  function self.status()
-    return status
-  end
-
   function self.mode()
     return mode
   end
@@ -263,6 +259,16 @@ function Apiary(device, address)
       self.checkOutput()
       self.checkInput()
     end
+  end
+
+  function self.status()
+    local queen, princess, drones = nil
+    if self.itemType(1) == "queen" then queen = true else queen = false end
+    if self.itemType(1) == "princess" then princess = true else princess = false end
+    if self.getItemData(2) == nil then drones = 0 else drones = self.getItemData(2).count end
+    local status = {queen, princess, drones, space = self.apiarySpaceCheck()
+    }
+    return status
   end
 
   return self
