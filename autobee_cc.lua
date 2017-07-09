@@ -18,23 +18,22 @@ if os.version ~= nil then -- This is a ComputerCraft OS API method
   end
 end
 
-if debug == true then
+if fs.exists("autobeeCore.lua") == true then
   dofile("autobeeCore.lua")
 else
--- Loads the core library, fetches if missing
-  if pcall(function() dofile("autobeeCore.lua") end) == false then
-    if pcall(function() dofile("autobee/autobeeCore.lua") end) == false then
-      print("Core Autobee library not found.  Fetching via Github.")
-      local file = nil
-      local response = http.get("https://raw.githubusercontent.com/jetpack-maniac/autobee/master/autobeeCore.lua")
-      if response == nil then
-        error("Could not reach Github.com")
+  if fs.exists("autobee/autobeeCore.lua") == true then
+    dofile("autobee/autobeeCore.lua")
+  else
+    print("Core Autobee library not found.  Fetching via Github.")
+    local file = nil
+    local response = http.get("https://raw.githubusercontent.com/jetpack-maniac/autobee/master/autobeeCore.lua")
+    if response == nil then
+      error("Could not reach Github.com")
+    else
+      if pcall(function() file = fs.open("autobee/autobeeCore.lua", "w") file.write(response.readAll()) file.close() end) then
+        print("Fetched AutoBee Core.")
       else
-        if pcall(function() file = fs.open("autobeeCore.lua", "w") file.write(response.readAll()) file.close() end) then
-          print("Fetched AutoBee Core.")
-        else
-          error("Could not create "..filename..", the disk is full or read-only.")
-        end
+        error("Could not create "..filename..", the disk is full or read-only.")
       end
     end
   end
