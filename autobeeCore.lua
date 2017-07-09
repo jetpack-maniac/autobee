@@ -266,12 +266,12 @@ function Apiary(device, address)
   end
 
   function self.checkApiary()
-    self.status()
+    self.getStatus()
     self.checkOutput()
     self.checkInput()
   end
 
-  function self.status()
+  function self.getStatus()
     local queenStatus, princessStatus, apiarySpace
     local droneCount = self.getItemData(2)
     if self.itemType(1) == "queen" then queenStatus = true else queenStatus = false end

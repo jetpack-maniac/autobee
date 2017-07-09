@@ -100,6 +100,7 @@ function handleTimer()
     apiaries[apiary].checkApiary()
   end
   apiaryTimer = os.startTimer(delay)
+  printInfo()
 end
 
 function handlePeripheralAttach()
@@ -116,8 +117,7 @@ end
 function humanInteraction()
   local _, data = os.pullEvent("key_up")
   if data == keys.l then
-    term.setCursorPos(1,1)
-    term.clear()
+
     printInfo()
   elseif data == keys.w then
     print("AutoBee: Interrupt detected. Closing program.")
@@ -129,9 +129,26 @@ function humanInteraction()
 end
 
 function printInfo()
-    print("AutoBee running.")
-    print("Press W to stop program. Press L to clear terminal.")
-    print(size(apiaries).." apiaries connected.")
+  local statusString = "AutoBee running. Press W to stop program."..'\n'
+  local totalApiaries = size(apiaries)
+  if totalApiaries == 1 then statusString = statusString.."1 apiary connected."..'\n'
+  else statusString = statusString..totalApiaries.." apiaries connected."..'\n' end
+    for i=1, #apiaries do
+      local status = apiaries[i].getStatus()
+      statusString = statusString.."Apiary "..i..": "
+      if status.queen == true then statusString = statusString.."running"
+      elseif status.princess == true and status.drones > 0 then
+        statusString = statusString.."breeding new queen"
+      elseif status.princess == true and status.drones == 0 then
+        statusString = statusString.."Has princess, missing drone"
+      elseif status.princess ~= true and status.drones > 0 then
+        statusString = statusString.."Has drone, missing princess"
+      end
+      statusString = string.format(statusString..'\n')
+    end
+  term.clear()
+  term.setCursorPos(1,1)
+  print(statusString)
 end
 
 ----------------------
