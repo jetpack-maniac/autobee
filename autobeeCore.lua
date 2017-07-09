@@ -230,6 +230,27 @@ function Apiary(device, address)
     end
   end
 
+  function self.emptySlot(slot)
+    local type = self.itemType(slot)
+    if type ~= nil then
+      if type == "princess" then
+        if self.isPrincessSlotOccupied() == true then
+          self.push(chestDir, slot)
+        else
+          self.movePrincess(slot)
+        end
+      elseif type == "drone" then
+        if self.isDroneSlotOccupied() == true then
+          self.push(chestDir, slot)
+        else
+          self.moveDrone(slot)
+        end
+      else
+        self.push(chestDir, slot)
+      end
+    end
+  end
+
   function self.checkInput()
     for slot=1,2 do
       if self.isPrincessSlotOccupied() == false then
@@ -243,24 +264,7 @@ function Apiary(device, address)
 
   function self.checkOutput()
     for slot=3,9 do
-      local type = self.itemType(slot)
-      if type ~= nil then
-        if type == "princess" then
-          if self.isPrincessSlotOccupied() == true then
-            self.push(chestDir, slot)
-          else
-            self.movePrincess(slot)
-          end
-        elseif type == "drone" then
-          if self.isDroneSlotOccupied() == true then
-            self.push(chestDir, slot)
-          else
-            self.moveDrone(slot)
-          end
-        else
-          self.push(chestDir, slot)
-        end
-      end
+      self.emptySlot(slot)
     end
   end
 
