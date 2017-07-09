@@ -1,5 +1,15 @@
 --- Configuration
 
+-- Whether or not apiary space will be checked, this allows basic overflow protection
+-- This can cause lag on computers that have lots of apiaries, it can be safely turned off
+-- if you regularly extract from your apiary and dump chest
+checkSpace = true
+
+-- Overflow protection (Requries checkSpace = true else does not function)
+-- How many apiary slots need to be free before starting a new generation, if less is available
+-- then AutoBee will not restart that apiary until space becomes available
+requiredSpace = 3
+
 -- The max size of the output inventory
 chestSize = 27
 
@@ -210,13 +220,13 @@ function Apiary(device, address)
       if type == "princess" then
         if self.queen == true or self.princess == true then
           self.push(chestDir, slot)
-        elseif status.space >= 2 then
+        elseif checkSpace == true and status.space >= requiredSpace then
           self.movePrincess(slot)
         end
       elseif type == "drone" then
         if status.drones == 64 then
           self.push(chestDir, slot)
-        elseif status.space >= 2 then
+        elseif checkSpace == true and status.space >= requiredSpace then
           self.moveDrone(slot)
           self.push(chestDir, slot)
         end
@@ -227,7 +237,7 @@ function Apiary(device, address)
   end
 
   function self.checkInput()
-    if status.space < 2 then return end
+    if checkSpace == true and status.space >= requiredSpace then return end
     for slot=1,2 do
       if status.queen == false and status.princess == false then
         self.pullPrincess()
@@ -262,12 +272,19 @@ function Apiary(device, address)
   end
 
   function self.status()
-    local queenStatus, princessStatus
+    local queenStatus, princessStatus, apiarySpace
     local droneCount = self.getItemData(2).count
     if self.itemType(1) == "queen" then queenStatus = true else queenStatus = false end
     if self.itemType(1) == "princess" then princessStatus = true else princessStatus = false end
     if droneCount == nil then droneCount = 0 end
-    status = {queen = queenStatus, princessStatus, drones = droneCount, space = self.apiarySpaceCheck() }
+    if checkSpace == true then
+      apiarySpace = self.apiarySpaceCheck()
+      if apiarySpace >= 2 then spaceAvailable = true else spaceAvailable = false end
+    else
+      apiarySpace = nil
+      spaceAvailable = true
+    end
+    status = {queen = queenStatus, princessStatus, drones = droneCount, space = apiarySpace }
     return status
   end
 
