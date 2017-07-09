@@ -147,6 +147,10 @@ function Apiary(device, address)
     return address
   end
 
+  function self.status(status)
+    return status
+  end
+
   -- Checks to see if the princess/queen slot (1) is empty or full
   function self.isPrincessSlotOccupied()
     return self.getItemData(1) ~= nil
@@ -268,9 +272,26 @@ function Apiary(device, address)
     end
   end
 
+  function self.apiarySpaceCheck()
+  local freeSlots = 0
+    for slot=3,9 do
+      local stack = getItemData(device, slot)
+      if stack == nil then
+        freeSlots = freeSlots+1
+      end
+    end
+    return freeSlots
+  end
+
   function self.checkApiary()
-    self.checkOutput()
-    self.checkInput()
+    local space = self.apiarySpaceCheck()
+    print("space: "..space)
+    if space >= 2 then
+      self.checkOutput()
+      self.checkInput()
+    else
+      self.status("full")
+    end
   end
 
   return self
