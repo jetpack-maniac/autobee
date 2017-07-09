@@ -1,10 +1,12 @@
 ---- AutoBee for ComputerCraft ----
 
+local debug = false
 
 -- Global variables
 local running = true
 local apiaryTimer = nil
 local apiaries = {}
+local delay = 5
 
 -- Version check
 if os.version ~= nil then -- This is a ComputerCraft OS API method
@@ -16,19 +18,23 @@ if os.version ~= nil then -- This is a ComputerCraft OS API method
   end
 end
 
+if debug == true then
+  dofile("autobeeCore.lua")
+else
 -- Loads the core library, fetches if missing
-if pcall(function() dofile("autobeeCore.lua") end) == false then
-  if pcall(function() dofile("autobee/autobeeCore.lua") end) == false then
-    print("Core Autobee library not found.  Fetching via Github.")
-    local file = nil
-    local response = http.get("https://raw.githubusercontent.com/jetpack-maniac/autobee/master/autobeeCore.lua")
-    if response == nil then
-      error("Could not reach Github.com")
-    else
-      if pcall(function() file = fs.open("autobeeCore.lua", "w") file.write(response.readAll()) file.close() end) then
-        print("Fetched AutoBee Core.")
+  if pcall(function() dofile("autobeeCore.lua") end) == false then
+    if pcall(function() dofile("autobee/autobeeCore.lua") end) == false then
+      print("Core Autobee library not found.  Fetching via Github.")
+      local file = nil
+      local response = http.get("https://raw.githubusercontent.com/jetpack-maniac/autobee/master/autobeeCore.lua")
+      if response == nil then
+        error("Could not reach Github.com")
       else
-        error("Could not create "..filename..", the disk is full or read-only.")
+        if pcall(function() file = fs.open("autobeeCore.lua", "w") file.write(response.readAll()) file.close() end) then
+          print("Fetched AutoBee Core.")
+        else
+          error("Could not create "..filename..", the disk is full or read-only.")
+        end
       end
     end
   end
@@ -72,7 +78,6 @@ end
 -- Device Management
 function removeDevices()
   os.cancelTimer(apiaryTimer)
-  apiaries = {}
 end
 
 function addDevice(address)
@@ -133,6 +138,9 @@ end
 ----------------------
 -- The main loop
 ----------------------
+
+-- this automatically allots 500ms to check each apiary with a minimum of 5 seconds overall
+if size(apiaries)/2 > 5 then delay = size(apiaries)/2 end
 
 peripheralCheck()
 if running == true then 
