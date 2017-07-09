@@ -273,10 +273,10 @@ function Apiary(device, address)
 
   function self.status()
     local queenStatus, princessStatus, apiarySpace
-    local droneCount = self.getItemData(2).count
+    local droneCount = self.getItemData(2)
     if self.itemType(1) == "queen" then queenStatus = true else queenStatus = false end
     if self.itemType(1) == "princess" then princessStatus = true else princessStatus = false end
-    if droneCount == nil then droneCount = 0 end
+    if droneCount == nil then droneCount = 0 else droneCount = droneCount.count end
     if checkSpace == true then
       apiarySpace = self.apiarySpaceCheck()
       if apiarySpace >= 2 then spaceAvailable = true else spaceAvailable = false end
