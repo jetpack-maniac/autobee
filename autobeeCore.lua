@@ -142,13 +142,19 @@ end
 
 function Apiary(device, address)
   local self = Container(device)
+  local status = "connected"
+  local mode = "standard"
 
   function self.getID()
     return address
   end
 
-  function self.status(status)
+  function self.status()
     return status
+  end
+
+  function self.mode()
+    return mode
   end
 
   -- Checks to see if the princess/queen slot (1) is empty or full
@@ -290,7 +296,7 @@ function Apiary(device, address)
       self.checkOutput()
       self.checkInput()
     else
-      self.status("full")
+      mode = "full"
     end
   end
 
