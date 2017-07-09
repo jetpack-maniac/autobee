@@ -144,7 +144,8 @@ function printInfo()
       elseif status.princess ~= true and status.drones > 0 then
         statusString = statusString.."Has drone, missing princess"
       end
-      statusString = string.format(statusString..'\n')
+      if apiaries[i].isFull() == true then statusString = statusString..", is full" end
+      statusString = statusString..'\n'
     end
   term.clear()
   term.setCursorPos(1,1)

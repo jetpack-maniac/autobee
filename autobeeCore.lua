@@ -154,6 +154,12 @@ function Apiary(device, address)
     return address
   end
 
+  function self.isFull()
+    if status.space == nil then return false end
+    if status.space < requiredSpace then return true
+    else return false end
+  end
+
   function self.mode()
     return mode
   end
@@ -279,10 +285,8 @@ function Apiary(device, address)
     if droneCount == nil then droneCount = 0 else droneCount = droneCount.count end
     if checkSpace == true then
       apiarySpace = self.apiarySpaceCheck()
-      if apiarySpace >= 2 then spaceAvailable = true else spaceAvailable = false end
     else
       apiarySpace = nil
-      spaceAvailable = true
     end
     status = {queen = queenStatus, princessStatus, drones = droneCount, space = apiarySpace }
     return status
