@@ -95,12 +95,12 @@ end
 
 -- ComputerCraft Event-based Functions
 function handleTimer()
-  local _, data = os.pullEvent("timer")
+  os.pullEvent("timer")
   for apiary, address in pairs(apiaries) do
     apiaries[apiary].checkApiary()
   end
-  apiaryTimer = os.startTimer(delay)
   printInfo()
+  apiaryTimer = os.startTimer(delay)
 end
 
 function handlePeripheralAttach()
@@ -109,7 +109,7 @@ function handlePeripheralAttach()
 end
 
 function handlePeripheralDetach()
-  local _, data = os.pullEvent("peripheral_detach")
+  os.pullEvent("peripheral_detach")
   removeDevices()
   initDevices()
 end
@@ -158,8 +158,8 @@ end
 
 print("Starting AutoBee... Building Apiary lists...")
 
--- this automatically allots 500ms to check each apiary with a minimum of 5 seconds overall
-if size(apiaries)/2 > 5 then delay = size(apiaries)/2 end
+-- this automatically allots 2 seconds to check each apiary with a minimum of 5 seconds overall
+if size(apiaries)*2 > 5 then delay = size(apiaries)*2 end
 
 peripheralCheck()
 if running == true then 
