@@ -117,7 +117,7 @@ end
 function humanInteraction()
   local _, data = os.pullEvent("key_up")
   if data == keys.l then
-
+    print("Checking apiaries for manual update...")
     printInfo()
   elseif data == keys.w then
     print("AutoBee: Interrupt detected. Closing program.")
@@ -136,12 +136,12 @@ function printInfo()
     for i=1, #apiaries do
       local status = apiaries[i].getStatus()
       statusString = statusString.."Apiary "..i..": "
-      if status.queen == true then statusString = statusString.."running"
+      if status.queen == true then statusString = statusString.."Running"
       elseif status.princess == true and status.drones > 0 then
-        statusString = statusString.."breeding new queen"
+        statusString = statusString.."Breeding new queen"
       elseif status.princess == true and status.drones == 0 then
         statusString = statusString.."Has princess, missing drone"
-      elseif status.princess ~= true and status.drones > 0 then
+      elseif status.princess == false and status.drones > 0 then
         statusString = statusString.."Has drone, missing princess"
       end
       if apiaries[i].isFull() == true then statusString = statusString..", is full" end

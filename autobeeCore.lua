@@ -288,7 +288,7 @@ function Apiary(device, address)
     else
       apiarySpace = nil
     end
-    status = {queen = queenStatus, princessStatus, drones = droneCount, space = apiarySpace }
+    status = {queen = queenStatus, princess = princessStatus, drones = droneCount, space = apiarySpace }
     return status
   end
 
