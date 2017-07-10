@@ -156,12 +156,19 @@ end
 -- The main loop
 ----------------------
 
+print("Starting AutoBee... Building Apiary lists...")
+
 -- this automatically allots 500ms to check each apiary with a minimum of 5 seconds overall
 if size(apiaries)/2 > 5 then delay = size(apiaries)/2 end
 
 peripheralCheck()
 if running == true then 
   initDevices()
+  print(size(apiaries).." apiaries detected and connected...")
+  -- run an inital check to start any idle apiaries for good data for the first info print
+  for apiary, address in pairs(apiaries) do
+    apiaries[apiary].checkApiary()
+  end
   printInfo()
 end
 
