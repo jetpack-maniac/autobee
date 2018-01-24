@@ -20,9 +20,9 @@ delay = 2
 debugPrints = false
 --- End of Configuration
 
-local queenNames = {"beeQueenGE", "forestry:beeQueenGE"}
-local princessNames = {"beePrincessGE", "forestry:beePrincessGE"}
-local droneNames = {"beeDroneGE", "forestry:beeDroneGE"}
+local queenNames = {"beeQueenGE", "forestry:beeQueenGE", "forestry:bee_queen_ge"}
+local princessNames = {"beePrincessGE", "forestry:beePrincessGE", "forestry:bee_princess_ge"}
+local droneNames = {"beeDroneGE", "forestry:beeDroneGE", "forestry:bee_drone_ge"}
 
 --------------------------------------------------------------------------------
 -- Misc Functions
