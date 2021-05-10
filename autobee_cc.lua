@@ -36,41 +36,21 @@ end
 function peripheralCheck()
   local apiary = findApiary()
   if apiary ~= nil then
+    -- print(peripheral.getType(apiary))
     dependencyCheck(apiary)
   else
     print("AutoBee Warning: No compatible apiaries detected.")
   end
 end
 
--- looks at a device and determines if it's a valid apiary, returns true or false
-function isApiary1(address)
-  if address == nil then return false end
-  -- 1.12.2 Apiary
-  if string.find(peripheral.getType(address), "forestry:apiary") then
-    return "apiary"
-  -- 1.12.2 Gendustry Industrial Apiary
-  elseif string.find(peripheral.getType(address), "gendustry:industrial_apiary") then
-    return "gendustry"
-  -- 1.12.2 Alveary
-  elseif string.find(peripheral.getType(address), "forestry:alveary_plain") then
-    return "alveary"
-  -- 1.10.2/1.11.2 Apiary
-  elseif string.find(peripheral.getType(address), "forestry_apiary") then
-    return "apiary"
-  -- 1.7.10 Apiary
-  elseif string.find(peripheral.getType(address), "apiculture") and peripheral.getType(address):sub(21,21) == "0" == true then
-    return "apiary"
-  else
-    return false
-  end
-end
-
-function isApiary(address)
+-- looks at a device and determines if it's a valid apiary, returns type or false
+function getApiaryType(address)
   if address == nil then return false end
 
   -- CURRENT EDITIONS
   -- 1.12.2 Apiary
   local device = peripheral.getType(address)
+  print(device)
   if string.find(device, "forestry:apiary") then
     return "apiary"
   -- 1.12.2 Gendustry Industrial Apiary
@@ -96,7 +76,8 @@ end
 function findApiary()
   local devices = peripheral.getNames()
   for _, address in pairs(devices) do
-    if isApiary(address) == "apiary" or "gendustry" then
+    local apiaryType = getApiaryType(address)
+    if apiaryType == "apiary" or apiaryType == "gendustry" then
       return peripheral.wrap(address)
     end
   end
@@ -110,7 +91,7 @@ function initDevices()
   local gendustryCount = 0
   local alvearyCount = 0
   for _, device in ipairs(devices) do
-    local apiaryType = isApiary(device)
+    local apiaryType = getApiaryType(device)
     local apiary = Apiary(peripheral.wrap(device))
     if apiaryType == "apiary" then
       apiary.checkApiary(3, 9)
