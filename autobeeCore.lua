@@ -241,8 +241,8 @@ function Apiary(device, address)
     end
   end
 
-  function self.checkOutput()
-    for slot=3,9 do
+  function self.checkOutput(firstSlot, lastSlot)
+    for slot=firstSlot, lastSlot do
       local type = self.itemType(slot)
       if type ~= nil then
         if type == "princess" then
@@ -264,8 +264,8 @@ function Apiary(device, address)
     end
   end
 
-  function self.checkApiary()
-    self.checkOutput()
+  function self.checkApiary(firstSlot, lastSlot)
+    self.checkOutput(firstSlot, lastSlot)
     self.checkInput()
   end
 

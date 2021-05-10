@@ -40,19 +40,25 @@ function peripheralCheck()
   if apiary ~= nil then
     dependencyCheck(apiary)
   else
-    print("AutoBee Warning: No apiaries detected.")
+    print("AutoBee Warning: No compatible apiaries detected.")
   end
 end
 
 -- looks at a device and determines if it's a valid apiary, returns true or false
 function isApiary(address)
   if address == nil then return false end
+  -- 1.12.2 Apiary
+  if string.find(peripheral.getType(address), "forestry:apiary") then
+    return "apiary"
+  -- Gendustry Industrial Apiary
+  elseif string.find(peripheral.getType(address), "gendustry:industrial_apiary") then
+    return "gendustry"
   -- 1.10.2/1.11.2 Apiary
-  if string.find(peripheral.getType(address), "forestry_apiary") then
-    return true
+  elseif string.find(peripheral.getType(address), "forestry_apiary") then
+    return "apiary"
   -- 1.7.10 Apiary
   elseif string.find(peripheral.getType(address), "apiculture") and peripheral.getType(address):sub(21,21) == "0" == true then
-    return true
+    return "apiary"
   else
     return false
   end
@@ -62,7 +68,7 @@ end
 function findApiary()
   local devices = peripheral.getNames()
   for _, address in pairs(devices) do
-    if isApiary(address) == true then
+    if isApiary(address) == "apiary" or "gendustry" then
       return peripheral.wrap(address)
     end
   end
@@ -75,16 +81,24 @@ function removeDevices()
   apiaries = {}
 end
 
-function addDevice(address)
+function addDevice(address, type)
   if isApiary(address) == true then
-    table.insert(apiaries, Apiary(peripheral.wrap(address)))
+    table.insert(apiaries, Apiary(peripheral.wrap(address), type))
   end
 end
 
 function initDevices()
-  local devices = peripheral.getNames()
+  local devices = peripheral.getNames()  
   for _, device in ipairs(devices) do
-    addDevice(device)
+--    addDevice(device)
+    local apiaryType = isApiary(device)
+    local apiary = Apiary(peripheral.wrap(device))
+    if apiaryType == "apiary" then
+      apiary.checkApiary(3, 9)
+    elseif apiaryType == "gendustry" then
+      print(apiary)
+      apiary.checkApiary(7, 15)
+    end
   end
   os.startTimer(delay)
 end
@@ -93,19 +107,27 @@ end
 function handleTimer()
   local _, data = os.pullEvent("timer")
   for apiary, address in pairs(apiaries) do
-    apiaries[apiary].checkApiary()
+    print(address)
+    -- Forestry apiary
+    if true then
+      apiaries[apiary].checkApiary(3, 9)
+    -- Gendustry industrial apiary
+    elseif false then
+      apiaries[apiary].checkApiary(7, 15)
+    end
   end
   apiaryTimer = os.startTimer(delay)
 end
 
 function handlePeripheralAttach()
   local _, data = os.pullEvent("peripheral")
-  addDevice(data) 
+--  addDevice(data)
+  initDevices()
 end
 
 function handlePeripheralDetach()
   local _, data = os.pullEvent("peripheral_detach")
-  removeDevices()
+--  removeDevices()
   initDevices()
 end
 
@@ -141,5 +163,20 @@ if running == true then
 end
 
 while running do
-  parallel.waitForAny(handleTimer, handlePeripheralAttach, handlePeripheralDetach, humanInteraction)
+  local event, data = os.pullEvent()
+  if event == "peripheral" or "peripheral_detach" or "timer" then
+    initDevices()
+  elseif event == "key_up" then
+    if data == keys.l then
+      term.setCursorPos(1,1)
+      term.clear()
+      printInfo()
+    elseif data == keys.w then
+      print("AutoBee: Interrupt detected. Closing program.")
+      if apiaryTimer ~= nil then 
+        os.cancelTimer(apiaryTimer)
+      end
+      running = false
+    end
+  end
 end
