@@ -1,10 +1,8 @@
 ---- AutoBee for ComputerCraft ----
 
-
 -- Global variables
 local running = true
 local apiaryTimer = nil
-local apiaries = {}
 
 -- Version check
 if os.version ~= nil then -- This is a ComputerCraft OS API method
@@ -45,19 +43,49 @@ function peripheralCheck()
 end
 
 -- looks at a device and determines if it's a valid apiary, returns true or false
-function isApiary(address)
+function isApiary1(address)
   if address == nil then return false end
   -- 1.12.2 Apiary
   if string.find(peripheral.getType(address), "forestry:apiary") then
     return "apiary"
-  -- Gendustry Industrial Apiary
+  -- 1.12.2 Gendustry Industrial Apiary
   elseif string.find(peripheral.getType(address), "gendustry:industrial_apiary") then
     return "gendustry"
+  -- 1.12.2 Alveary
+  elseif string.find(peripheral.getType(address), "forestry:alveary_plain") then
+    return "alveary"
   -- 1.10.2/1.11.2 Apiary
   elseif string.find(peripheral.getType(address), "forestry_apiary") then
     return "apiary"
   -- 1.7.10 Apiary
   elseif string.find(peripheral.getType(address), "apiculture") and peripheral.getType(address):sub(21,21) == "0" == true then
+    return "apiary"
+  else
+    return false
+  end
+end
+
+function isApiary(address)
+  if address == nil then return false end
+
+  -- CURRENT EDITIONS
+  -- 1.12.2 Apiary
+  local device = peripheral.getType(address)
+  if string.find(device, "forestry:apiary") then
+    return "apiary"
+  -- 1.12.2 Gendustry Industrial Apiary
+  elseif string.find(device, "gendustry:industrial_apiary") then
+    return "gendustry"
+  -- 1.12.2 Alveary
+  elseif string.find(device, "forestry:alveary_plain") then
+    return "alveary"
+
+  -- LEGACY EDITIONS
+  -- 1.10.2/1.11.2 Apiary
+  elseif string.find(device, "forestry_apiary") then
+    return "apiary"
+  -- 1.7.10 Apiary
+  elseif string.find(device, "apiculture") and peripheral.getType(address):sub(21,21) == "0" == true then
     return "apiary"
   else
     return false
@@ -75,59 +103,42 @@ function findApiary()
   return nil
 end
 
--- Device Management
-function removeDevices()
-  os.cancelTimer(apiaryTimer)
-  apiaries = {}
-end
-
-function addDevice(address, type)
-  if isApiary(address) == true then
-    table.insert(apiaries, Apiary(peripheral.wrap(address), type))
-  end
-end
-
 function initDevices()
+  apiaryTimer = nil
   local devices = peripheral.getNames()  
+  local apiaryCount = 0
+  local gendustryCount = 0
+  local alvearyCount = 0
   for _, device in ipairs(devices) do
---    addDevice(device)
     local apiaryType = isApiary(device)
     local apiary = Apiary(peripheral.wrap(device))
     if apiaryType == "apiary" then
       apiary.checkApiary(3, 9)
+      apiaryCount = apiaryCount +1
     elseif apiaryType == "gendustry" then
-      print(apiary)
       apiary.checkApiary(7, 15)
+      gendustryCount = gendustryCount + 1
+    elseif apiaryType == "alveary" then
+      -- apiary.checkApiary(7, 15)
+      alvearyCount = alvearyCount + 1
     end
   end
-  os.startTimer(delay)
-end
-
--- ComputerCraft Event-based Functions
-function handleTimer()
-  local _, data = os.pullEvent("timer")
-  for apiary, address in pairs(apiaries) do
-    print(address)
-    -- Forestry apiary
-    if true then
-      apiaries[apiary].checkApiary(3, 9)
-    -- Gendustry industrial apiary
-    elseif false then
-      apiaries[apiary].checkApiary(7, 15)
-    end
-  end
+  printInfo(apiaryCount, alvearyCount, gendustryCount)
   apiaryTimer = os.startTimer(delay)
 end
 
-function handlePeripheralAttach()
-  local _, data = os.pullEvent("peripheral")
---  addDevice(data)
-  initDevices()
+function printInfo(apiaryCount, alvearyCount, gendustryCount)
+  term.setCursorPos(1,1)
+  term.clear()
+  print("AutoBee running.")
+  print("Press W to stop program. Press L to clear terminal.")
+  print(alvearyCount.." alvearies connected.")
+  print(apiaryCount.." apiaries connected.")
+  print(gendustryCount.." industrial apiaries connected.")
 end
 
-function handlePeripheralDetach()
-  local _, data = os.pullEvent("peripheral_detach")
---  removeDevices()
+function handleTimer()
+  local _, data = os.pullEvent("timer")
   initDevices()
 end
 
@@ -136,20 +147,19 @@ function humanInteraction()
   if data == keys.l then
     term.setCursorPos(1,1)
     term.clear()
-    printInfo()
+    print("AutoBee running.")
+    print("Press W to stop program. Press L to clear terminal.")
+    print("Apiary count will update on next check.")
+    if apiaryTimer == nil then
+      apiaryTimer = os.startTimer(delay)
+    end
   elseif data == keys.w then
     print("AutoBee: Interrupt detected. Closing program.")
-    if apiaryTimer ~= nil then 
+    if apiaryTimer ~= nil then
       os.cancelTimer(apiaryTimer)
     end
     running = false
   end
-end
-
-function printInfo()
-    print("AutoBee running.")
-    print("Press W to stop program. Press L to clear terminal.")
-    print(size(apiaries).." apiaries connected.")
 end
 
 ----------------------
@@ -159,24 +169,8 @@ end
 peripheralCheck()
 if running == true then 
   initDevices()
-  printInfo()
 end
 
 while running do
-  local event, data = os.pullEvent()
-  if event == "peripheral" or "peripheral_detach" or "timer" then
-    initDevices()
-  elseif event == "key_up" then
-    if data == keys.l then
-      term.setCursorPos(1,1)
-      term.clear()
-      printInfo()
-    elseif data == keys.w then
-      print("AutoBee: Interrupt detected. Closing program.")
-      if apiaryTimer ~= nil then 
-        os.cancelTimer(apiaryTimer)
-      end
-      running = false
-    end
-  end
+  parallel.waitForAny(handleTimer, humanInteraction)
 end
