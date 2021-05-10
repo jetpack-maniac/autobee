@@ -36,7 +36,6 @@ end
 function peripheralCheck()
   local apiary = findApiary()
   if apiary ~= nil then
-    -- print(peripheral.getType(apiary))
     dependencyCheck(apiary)
   else
     print("AutoBee Warning: No compatible apiaries detected.")
@@ -50,7 +49,6 @@ function getApiaryType(address)
   -- CURRENT EDITIONS
   -- 1.12.2 Apiary
   local device = peripheral.getType(address)
-  print(device)
   if string.find(device, "forestry:apiary") then
     return "apiary"
   -- 1.12.2 Gendustry Industrial Apiary
@@ -92,7 +90,7 @@ function initDevices()
   local alvearyCount = 0
   for _, device in ipairs(devices) do
     local apiaryType = getApiaryType(device)
-    local apiary = Apiary(peripheral.wrap(device))
+    local apiary = Apiary(peripheral.wrap(device), nil, apiaryType)
     if apiaryType == "apiary" then
       apiary.checkApiary(3, 9)
       apiaryCount = apiaryCount +1
@@ -100,7 +98,7 @@ function initDevices()
       apiary.checkApiary(7, 15)
       gendustryCount = gendustryCount + 1
     elseif apiaryType == "alveary" then
-      -- apiary.checkApiary(7, 15)
+      apiary.checkApiary(3, 9)
       alvearyCount = alvearyCount + 1
     end
   end

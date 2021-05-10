@@ -10,8 +10,9 @@
 -- The max size of the output inventory
 chestSize = 27
 
--- chest direction relative to apiary
-chestDir = "up"
+-- chest direction relative to apiary/alveary
+apiaryChestDirection = "up"
+alvearyChestDirection = "south"
 
 -- how long the computer will wait in seconds before checking the apiaries
 delay = 2
@@ -140,11 +141,23 @@ end
 --------------------------------------------------------------------------------
 -- Apiary class
 
-function Apiary(device, address)
+function Apiary(device, address, type)
   local self = Container(device)
 
   function self.getID()
     return address
+  end
+
+  function self.type()
+    return type
+  end
+  
+  function getChestSide()
+    if type == "apiary" or type == "gendustry" then
+      return apiaryChestDirection
+    elseif type == "alveary" then
+      return alvearyChestDirection
+    end
   end
 
   -- Checks to see if the princess/queen slot (1) is empty or full
@@ -159,22 +172,22 @@ function Apiary(device, address)
 
   -- Removes a princess from the output to it's proper chest slot
   function self.pushPrincess(slot)
-    self.push(chestDir,slot,1,chestSize)
+    self.push(getChestSide(),slot,1,chestSize)
   end
 
   -- Pulls princess or queen from appropriate chest slot
   function self.pullPrincess()
-    self.pull(chestDir,chestSize,1,1)
+    self.pull(getChestSide(),chestSize,1,1)
   end
 
   -- Removes a drone from the output to it's proper chest slot
   function self.pushDrone(slot)
-    self.push(chestDir,slot,64,chestSize-1)
+    self.push(getChestSide(),slot,64,chestSize-1)
   end
 
   -- Pulls drone from appropriate chest slot
   function self.pullDrone()
-    self.pull(chestDir,chestSize-1,64,2)
+    self.pull(getChestSide(),chestSize-1,64,2)
   end
 
   -- Moves drone from output into input
